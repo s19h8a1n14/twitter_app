@@ -1,0 +1,100 @@
+/* General styling */
+body {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  background-color: #f4f4f9;
+}
+
+.App {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.App-header {
+  background-color: #f4f4f9;
+  padding: 40px;
+  border-radius: 10px;
+  color: #333;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  max-width: 800px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.subscription-plans {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  flex-wrap: wrap; /* Ensures proper wrapping on smaller screens */
+}
+
+.plan {
+  background-color: white;
+  padding: 30px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 45%;
+  margin: 10px; /* Add margin for spacing */
+  transition: transform 0.3s ease;
+}
+
+.plan:hover {
+  transform: translateY(-10px);
+}
+
+.plan h2 {
+  margin-top: 0;
+  font-size: 1.8em;
+  color: #333;
+}
+
+.price {
+  font-size: 1.6em;
+  color: #1da1f2;
+  margin: 15px 0;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.features li {
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.subscribe-button {
+  display: inline-block;
+  background-color: #1da1f2;
+  color: white;
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
+}
+
+.subscribe-button:hover {
+  background-color: #0d8de0;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .plan {
+    width: 90%;
+  }
+}
