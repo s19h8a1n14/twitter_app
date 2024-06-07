@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import TweetBox from "./TweetBox/TweetBox";
 import Post from "./Post/Post";
 import LanguageSelector from "./LanguageSelector";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+
+const theme = extendTheme({});
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
@@ -19,7 +22,9 @@ const Feed = () => {
       <div className="feed__header">
         <LanguageSelector />
       </div>
+
       <TweetBox />
+
       {posts.map((p) => (
         <Post key={p._id} p={p} />
       ))}

@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Modal, Box, TextField } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import VideoCallIcon from "@mui/icons-material/VideoCall";
 import "./TweetBox.css";
 import axios from "axios";
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../../firebase.init";
 import { useTranslation } from "react-i18next";
-import { useToast } from "@chakra-ui/toast";
-// import { toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// import { ToastContainer } from "react-toastify";
-
-// Add this to your component or main app file to initialize the toast notifications
-// toast.configure({ position: toast.POSITION.BOTTOM_RIGHT });
+import { useToast } from "@chakra-ui/react";
+import Snackbar from "@mui/material/Snackbar";
+import VideoCall from "@mui/icons-material/VideoCall";
+import { Link } from "react-router-dom";
 
 const TweetBox = () => {
   const [post, setPost] = useState("");
@@ -29,12 +27,25 @@ const TweetBox = () => {
   const email = user?.email;
   const { t } = useTranslation();
   const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [desc, setDesc] = useState("");
+  const [otp1, setOtp1] = useState("");
+  const [otp2, setOtp2] = useState("");
+  const [otp3, setOtp3] = useState("");
+  const [otp4, setOtp4] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+
+  // For otp verfication
+  const [otp, setOtp] = useState("");
 
   const userProfilePic = loggedInUser[0]?.profileImage
     ? loggedInUser[0]?.profileImage
     : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
   const subscribed = loggedInUser[0]?.subscription;
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleTweet = (e) => {
     e.preventDefault();
@@ -58,6 +69,9 @@ const TweetBox = () => {
         username: username,
         name: name,
         email: email,
+        upvotes: videoURL ? 1 : 0,
+        likes: 0,
+        retweets: 0,
       };
       console.log(userPost);
       setPost("");
@@ -73,13 +87,8 @@ const TweetBox = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data.error === "Daily post limit reached") {
-            alert("Daily post limit reached");
-            toast({
-              title: "Daily post limit reached",
-              status: "error",
-              duration: 5000,
-              isClosable: true,
-            });
+            setDesc("Daily post limit reached");
+            setOpen(true);
           }
           console.log(data);
         })
@@ -125,7 +134,9 @@ const TweetBox = () => {
     }
 
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
-      alert("Video exceeds maximum size limit.");
+      setDesc("Video size exceeds maximum limit.");
+      setOpen(true);
+
       return;
     }
 
@@ -140,8 +151,8 @@ const TweetBox = () => {
         alert("Video exceeds maximum duration limit.");
         return;
       }
-
-      requestOTPAndUploadVideo(video);
+      const uploadedVideo = video;
+      requestOTPAndUploadVideo();
     };
 
     videoElement.onerror = () => {
@@ -151,74 +162,172 @@ const TweetBox = () => {
     videoElement.src = URL.createObjectURL(video);
   };
 
-  const requestOTPAndUploadVideo = (video) => {
-    const userEmail = email;
+  // Function to send OTP
+  const sendOTP = (email) => {
+    setOtp1("");
+    setOtp2("");
+    setOtp3("");
+    setOtp4("");
+    return axios.post("http://localhost:5000/sendotp", { email });
+  };
 
-    axios
-      .post("http://localhost:5000/sendotp", { email: userEmail })
+  // Function to verify OTP and upload video
+  const verifyOTPAndUploadVideo = () => {
+    const userEmail = email;
+    const otp = otp1 + otp2 + otp3 + otp4;
+    console.log(otp);
+    return axios
+      .post("http://localhost:5000/verify", { otp, email: userEmail })
       .then((res) => {
         console.log(res.data);
-        const otp = prompt("Enter OTP sent to your email:");
+        if (res.data === "Verified") {
+          setOpenModal(false);
+          setDesc("OTP verified successfully.");
+          setOpen(true);
+          return uploadVideo();
+        } else {
+          alert("Invalid OTP. Please try again.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error verifying OTP:", err);
+        alert("Failed to verify OTP. Please try again later.");
+      });
+  };
 
-        axios
-          .post("http://localhost:5000/verify", { otp, email: userEmail })
+  // Function to upload video
+  const uploadVideo = () => {
+    setVideoLoading(true);
+    const data = new FormData();
+    const video = document.getElementById("video").files[0];
+    data.append("file", video);
+    data.append("upload_preset", "twitter");
+    data.append("cloud_name", "df9xugdxg");
+
+    return axios
+      .post("https://api.cloudinary.com/v1_1/df9xugdxg/video/upload", data)
+      .then((res) => {
+        setVideoURL(res.data.url.toString());
+        console.log(res.data.url.toString());
+        setVideoLoading(false);
+
+        const videoData = {
+          url: res.data.url.toString(),
+        };
+
+        return fetch("http://localhost:5000/videos", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(videoData),
+        })
+          .then((response) => response.json())
           .then((res) => {
-            console.log(res.data);
-            if (res.data === "Verified") {
-              setVideoLoading(true);
-              const data = new FormData();
-              data.append("file", video);
-              data.append("upload_preset", "twitter");
-              data.append("cloud_name", "df9xugdxg");
-
-              axios
-                .post(
-                  "https://api.cloudinary.com/v1_1/df9xugdxg/video/upload",
-                  data
-                )
-                .then((res) => {
-                  setVideoURL(res.data.url.toString());
-                  console.log(res.data.url.toString());
-                  setVideoLoading(false);
-
-                  const video = {
-                    url: res.data.url.toString(),
-                  };
-
-                  fetch("http://localhost:5000/videos", {
-                    method: "POST",
-                    headers: {
-                      "content-type": "application/json",
-                    },
-                    body: JSON.stringify(video),
-                  })
-                    .then((response) => response.json())
-                    .then((res) => {
-                      console.log("Video uploaded and upvoted:", res);
-                    })
-                    .catch((err) => {
-                      console.error("Error saving video:", err);
-                      alert("Error saving video. Please try again.");
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  setVideoLoading(false);
-                });
-            } else {
-              alert("Invalid OTP. Please try again.");
-            }
+            console.log("Video uploaded and upvoted:", res);
           })
           .catch((err) => {
-            console.error("Error verifying OTP:", err);
-            alert("Failed to verify OTP. Please try again later.");
+            console.error("Error saving video:", err);
+            alert("Error saving video. Please try again.");
           });
+      })
+      .catch((err) => {
+        console.log(err);
+        setVideoLoading(false);
+      });
+  };
+
+  // Updated function to request OTP and upload video
+  const requestOTPAndUploadVideo = () => {
+    const userEmail = email;
+    sendOTP(userEmail)
+      .then((otpResponse) => {
+        console.log(otpResponse.data);
+        setOpenModal(true);
       })
       .catch((err) => {
         console.error("Error requesting OTP:", err);
         alert("Failed to request OTP. Please try again later.");
       });
   };
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    backgroundColor: "#ffffff",
+    border: "2px solid #000",
+    boxShadow: "0px 0px 24px rgba(0, 0, 0, 0.25)",
+    padding: "16px",
+  };
+
+  const inputContainerStyle = {
+    display: "flex", // Display children in a row
+    justifyContent: "center", // Center-align children horizontally
+  };
+
+  const inputStyle = {
+    marginRight: "8px", // Add right margin between text fields
+  };
+
+  const otpModal = (
+    <Modal
+      open={openModal}
+      onClose={() => setOpenModal(false)}
+      aria-labelledby="parent-modal-title"
+      aria-describedby="parent-modal-description"
+    >
+      <Box sx={modalStyle}>
+        <h2 id="parent-modal-title">{t("Enter OTP to Upload Video")}</h2>
+        <p id="parent-modal-description">
+          {t("We have sent OTP to your email:")} {user.email}
+        </p>
+        <div className="otpField" style={inputContainerStyle}>
+          <TextField
+            style={inputStyle}
+            value={otp1}
+            onChange={(e) => {
+              setOtp1(e.target.value.slice(0, 1));
+              if (e.target.value.length === 1) {
+                document.getElementById("otp2").focus();
+              }
+            }}
+          />
+          <TextField
+            style={inputStyle}
+            id="otp2"
+            value={otp2}
+            onChange={(e) => {
+              setOtp2(e.target.value.slice(0, 1));
+              if (e.target.value.length === 1) {
+                document.getElementById("otp3").focus();
+              }
+            }}
+          />
+          <TextField
+            style={inputStyle}
+            id="otp3"
+            value={otp3}
+            onChange={(e) => {
+              setOtp3(e.target.value.slice(0, 1));
+              if (e.target.value.length === 1) {
+                document.getElementById("otp4").focus();
+              }
+            }}
+          />
+          <TextField
+            style={inputStyle}
+            id="otp4"
+            value={otp4}
+            onChange={(e) => setOtp4(e.target.value.slice(0, 1))}
+          />
+        </div>
+        <Button onClick={verifyOTPAndUploadVideo}>Verify OTP</Button>
+      </Box>
+    </Modal>
+  );
 
   return (
     <div className="tweetBox">
@@ -259,7 +368,7 @@ const TweetBox = () => {
             {videoLoading ? (
               <p>Loading...</p>
             ) : (
-              <p>{videoURL ? t("Video uploaded") : t("Upload Video")}</p>
+              <p>{videoURL ? t("Video uploaded") : <VideoCallIcon />}</p>
             )}
           </label>
           <input
@@ -274,6 +383,16 @@ const TweetBox = () => {
           {t("Tweet")}
         </Button>
       </form>
+      <Link to="/home/subscribe">
+        <Snackbar
+          open={open}
+          autoHideDuration={5000}
+          onClose={handleClose}
+          message={desc}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        />
+      </Link>
+      {otpModal}
     </div>
   );
 };

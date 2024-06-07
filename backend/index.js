@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 require("dotenv").config({ path: "../.env" });
+const mongoose = require("mongoose");
 
 var nm = require("nodemailer");
 
@@ -26,7 +27,7 @@ const apikey = process.env.API_KEY;
 
 const stripe = require("stripe")(apikey);
 
-const endpointSecret = process.env.ENDPOINT_SECRET;
+const endpointSecret = "whsec_0sXRxOgpV5IarMyZroPHVmtIo5kOq9nR";
 
 let session = "";
 
@@ -357,6 +358,95 @@ async function run() {
       user.subscriptionExpiry = Date.now();
       const result = await userCollection.insertOne(user);
       res.send(result);
+    });
+
+    app.patch("/posts/:id/upvote", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { upvotes: post.upvotes + 1 } }
+      );
+      res.send(updatedPost);
+    });
+
+    app.patch("/posts/:id/downvote", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { upvotes: post.upvotes - 1 } }
+      );
+      res.send(updatedPost);
+    });
+    app.patch("/posts/:id/like", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { likes: post.likes + 1 } }
+      );
+      res.send(updatedPost);
+    });
+
+    app.patch("/posts/:id/unlike", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { likes: post.likes - 1 } }
+      );
+      res.send(updatedPost);
+    });
+
+    app.patch("/posts/:id/retweet", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { retweets: post.retweets + 1 } }
+      );
+      res.send(updatedPost);
+    });
+
+    app.patch("/posts/:id/undoretweet", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollection.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const updatedPost = await postCollection.updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        { $set: { retweets: post.retweets - 1 } }
+      );
+      res.send(updatedPost);
     });
 
     app.patch("/userUpdates/:email", async (req, res) => {

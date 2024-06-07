@@ -33,6 +33,7 @@ p {
 .subscription-plans {
   display: flex;
   justify-content: space-around;
+  flex-direction: row;
   margin-top: 20px;
   flex-wrap: wrap; /* Ensures proper wrapping on smaller screens */
 }
