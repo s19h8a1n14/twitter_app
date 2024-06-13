@@ -361,92 +361,129 @@ async function run() {
     });
 
     app.patch("/posts/:id/upvote", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
+      try {
+        const { id } = req.params;
+        const post = await postCollection.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!post) {
+          return res.status(404).send("Post not found");
+        }
+
+        const email = post.email;
+        const user = await userCollection.findOne({ email: email });
+        const userId = String(user._id);
+
+        const index = post.upvotes.findIndex(
+          (likeId) => likeId === String(userId)
+        );
+
+        if (index === -1) {
+          // like the post
+          post.upvotes.push(userId);
+        } else {
+          // dislike the post
+          post.upvotes = post.upvotes.filter((likeId) => likeId !== userId);
+        }
+
+        const updateDoc = { $set: { upvotes: post.upvotes } };
+        const options = { upsert: true };
+
+        const updatedPost = await postCollection.updateOne(
+          { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
+          updateDoc,
+          options
+        );
+
+        res.json(updatedPost);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
       }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { upvotes: post.upvotes + 1 } }
-      );
-      res.send(updatedPost);
     });
 
-    app.patch("/posts/:id/downvote", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
-      }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { upvotes: post.upvotes - 1 } }
-      );
-      res.send(updatedPost);
-    });
     app.patch("/posts/:id/like", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
-      }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { likes: post.likes + 1 } }
-      );
-      res.send(updatedPost);
-    });
+      try {
+        const { id } = req.params;
+        const post = await postCollection.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!post) {
+          return res.status(404).send("Post not found");
+        }
 
-    app.patch("/posts/:id/unlike", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
+        const email = post.email;
+        const user = await userCollection.findOne({ email: email });
+        const userId = String(user._id);
+
+        const index = post.likes.findIndex(
+          (likeId) => likeId === String(userId)
+        );
+
+        if (index === -1) {
+          // like the post
+          post.likes.push(userId);
+        } else {
+          // dislike the post
+          post.likes = post.likes.filter((likeId) => likeId !== userId);
+        }
+
+        const updateDoc = { $set: { likes: post.likes } };
+        const options = { upsert: true };
+
+        const updatedPost = await postCollection.updateOne(
+          { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
+          updateDoc,
+          options
+        );
+
+        res.json(updatedPost);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
       }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { likes: post.likes - 1 } }
-      );
-      res.send(updatedPost);
     });
 
     app.patch("/posts/:id/retweet", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
-      }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { retweets: post.retweets + 1 } }
-      );
-      res.send(updatedPost);
-    });
+      try {
+        const { id } = req.params;
+        const post = await postCollection.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!post) {
+          return res.status(404).send("Post not found");
+        }
 
-    app.patch("/posts/:id/undoretweet", async (req, res) => {
-      const { id } = req.params;
-      const post = await postCollection.findOne({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      if (!post) {
-        return res.status(404).send("Post not found");
+        const email = post.email;
+        const user = await userCollection.findOne({ email: email });
+        const userId = String(user._id);
+
+        const index = post.retweets.findIndex(
+          (likeId) => likeId === String(userId)
+        );
+
+        if (index === -1) {
+          // like the post
+          post.retweets.push(userId);
+        } else {
+          // dislike the post
+          post.retweets = post.retweets.filter((likeId) => likeId !== userId);
+        }
+
+        const updateDoc = { $set: { retweets: post.retweets } };
+        const options = { upsert: true };
+
+        const updatedPost = await postCollection.updateOne(
+          { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
+          updateDoc,
+          options
+        );
+
+        res.json(updatedPost);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
       }
-      const updatedPost = await postCollection.updateOne(
-        { _id: new mongoose.Types.ObjectId(id) },
-        { $set: { retweets: post.retweets - 1 } }
-      );
-      res.send(updatedPost);
     });
 
     app.patch("/userUpdates/:email", async (req, res) => {

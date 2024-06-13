@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -18,6 +18,7 @@ const languages = [
   { code: "sp", name: "Spanish" },
   { code: "fr", name: "French" },
   { code: "po", name: "Portuguese" },
+  { code: "ar", name: "Arabic" },
 ];
 
 const LanguageSelector = () => {
@@ -33,6 +34,7 @@ const LanguageSelector = () => {
   const [code, setCode] = useState("");
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const otp1Ref = useRef(null);
 
   const { i18n } = useTranslation();
   useEffect(() => {
@@ -42,6 +44,17 @@ const LanguageSelector = () => {
       setCode(storedLanguage);
     }
   }, []);
+
+  useEffect(() => {
+    document.body.dir = i18n.dir();
+  }, [i18n, i18n.language]);
+
+  // useEffect(() => {
+  //   if (openModal && otp1Ref.current) {
+  //     console.log("Focusing on otp1 input field");
+  //     otp1Ref.current.focus();
+  //   }
+  // }, [openModal]);
 
   const handleCloseSnackbar = () => {
     setOpen(false);
@@ -122,9 +135,23 @@ const LanguageSelector = () => {
     marginRight: "8px", // Add right margin between text fields
   };
 
+  const handleOtpChange = (setter, nextInputId, prevInputId, event) => {
+    const value = event.target.value.slice(0, 1);
+    setter(value);
+    if (value && nextInputId) {
+      document.getElementById(nextInputId).focus();
+    } else if (!value && prevInputId && event.code === "Backspace") {
+      document.getElementById(prevInputId).focus();
+    }
+  };
+  const handleOpen = () => {
+    document.getElementById("otp1").focus();
+  };
+
   const otpModal = (
     <Modal
       open={openModal}
+      onOpen={() => handleOpen()}
       onClose={() => setOpenModal(false)}
       aria-labelledby="parent-modal-title"
       aria-describedby="parent-modal-description"
@@ -138,13 +165,16 @@ const LanguageSelector = () => {
         <div className="otpField" style={inputContainerStyle}>
           <TextField
             style={inputStyle}
+            id="otp1"
             value={otp1}
-            onChange={(e) => {
-              setOtp1(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
-                document.getElementById("otp2").focus();
-              }
-            }}
+            onChange={(e) => handleOtpChange(setOtp1, "otp2", null, e)}
+            //inputRef={otp1Ref}
+            // onChange={(e) => {
+            //   setOtp1(e.target.value.slice(0, 1));
+            //   if (e.target.value.length === 1) {
+            //     document.getElementById("otp2").focus();
+            //   }
+            // }}
           />
           <TextField
             style={inputStyle}
@@ -152,27 +182,39 @@ const LanguageSelector = () => {
             value={otp2}
             onChange={(e) => {
               setOtp2(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
+              const value = e.target.value.slice(0, 1);
+              //setter(value);
+              if (value && "otp3") {
                 document.getElementById("otp3").focus();
+              } else if (!value && "otp1" && e.which === "Backspace") {
+                document.getElementById("otp1").focus();
               }
             }}
+            // onChange={(e) => {
+            //   setOtp2(e.target.value.slice(0, 1));
+            //   if (e.target.value.length === 1) {
+            //     document.getElementById("otp3").focus();
+            //   }
+            // }}
           />
           <TextField
             style={inputStyle}
             id="otp3"
             value={otp3}
-            onChange={(e) => {
-              setOtp3(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
-                document.getElementById("otp4").focus();
-              }
-            }}
+            onChange={(e) => handleOtpChange(setOtp3, "otp4", "otp2", e)}
+            // onChange={(e) => {
+            //   setOtp3(e.target.value.slice(0, 1));
+            //   if (e.target.value.length === 1) {
+            //     document.getElementById("otp4").focus();
+            //   }
+            // }}
           />
           <TextField
             style={inputStyle}
             id="otp4"
             value={otp4}
-            onChange={(e) => setOtp4(e.target.value.slice(0, 1))}
+            onChange={(e) => handleOtpChange(setOtp4, null, "otp3", e)}
+            // onChange={(e) => setOtp4(e.target.value.slice(0, 1))}
           />
         </div>
         <Button onClick={verify}>{t("Verify OTP")}</Button>

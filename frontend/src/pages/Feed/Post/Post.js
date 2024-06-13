@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Button } from "@mui/material";
+import ButtonBase from "@mui/material/ButtonBase";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
@@ -10,6 +11,7 @@ import "./Post.css";
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
 import auth from "../../../firebase.init";
 import { use } from "i18next";
+import { useNavigate } from "react-router-dom";
 
 const Post = ({ p }) => {
   const {
@@ -20,7 +22,7 @@ const Post = ({ p }) => {
     post,
     profilePhoto,
     upvotes,
-    likes,
+
     retweets,
   } = p;
   const [loggedInUser] = UseLoggedInUser();
@@ -28,140 +30,71 @@ const Post = ({ p }) => {
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
   const [hasRetweeted, setHasRetweeted] = useState(false);
+  const navigate = useNavigate();
 
-  const [votes, setVotes] = useState(upvotes);
-  const [like, setLike] = useState(likes);
-  const [retweet, setRetweet] = useState(retweets);
-
-  useEffect(() => {
-    setVotes(p.upvotes);
-  }, [hasUpvoted]);
-
-  useEffect(() => {
-    setLike(p.likes);
-  }, [hasLiked]);
-
-  useEffect(() => {
-    setRetweet(p.retweets);
-  }, [hasRetweeted]);
-
-  const handleUpvote = async () => {
-    if (!hasUpvoted) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/upvote`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+  const handleUpvote = async (e) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(
+        `http://localhost:5000/posts/${p._id}/upvote`,
+        {
+          method: "PATCH",
         }
-        const data = await response.json();
-        setHasUpvoted(true);
-        setVotes(p.upvotes);
-      } catch (error) {
-        console.error("Error:", error);
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } else {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/downvote`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-
-        setHasUpvoted(false);
-        setVotes(p.upvotes);
-      } catch (error) {
-        console.error("Error:", error);
-      }
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error:", error);
     }
+    setHasUpvoted(!hasUpvoted);
   };
 
-  const handleLikes = async () => {
-    if (!hasLiked) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/like`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+  const handleLikes = async (e) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(
+        `http://localhost:5000/posts/${p._id}/like`,
+        {
+          method: "PATCH",
         }
-        const data = await response.json();
-
-        setHasLiked(true);
-        setLike(p.likes);
-      } catch (error) {
-        console.error("Error:", error);
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } else {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/unlike`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-
-        setHasLiked(false);
-        setLike(p.likes);
-      } catch (error) {
-        console.error("Error:", error);
-      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
     }
+    setHasLiked(!hasLiked);
   };
 
-  const handleRetweets = async () => {
-    if (!hasRetweeted) {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/retweet`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+  const handleRetweets = async (e) => {
+    e.stopPropagation();
+    try {
+      const response = await fetch(
+        `http://localhost:5000/posts/${p._id}/retweet`,
+        {
+          method: "PATCH",
         }
-        const data = await response.json();
-
-        setHasRetweeted(true);
-        setRetweet(p.retweets);
-      } catch (error) {
-        console.error("Error:", error);
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-    } else {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/posts/${p._id}/undoretweet`,
-          {
-            method: "PATCH",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-
-        setHasRetweeted(false);
-        setRetweet(p.retweets);
-      } catch (error) {
-        console.error("Error:", error);
-      }
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error:", error);
     }
+    setHasRetweeted(!hasRetweeted);
+  };
+
+  const formattedDate = new Date(p.createdAt).toLocaleDateString();
+  const formattedTime = new Date(p.createdAt).toLocaleTimeString();
+
+  const navigateTo = () => {
+    navigate(`/post/${p._id}`);
   };
 
   return (
@@ -202,7 +135,7 @@ const Post = ({ p }) => {
             controls
           ></video>
         )}
-
+        <span className="post_date">{`${formattedDate} at ${formattedTime}`}</span>
         <div className="post_footer">
           <div className="post_footerItem">
             <ChatBubbleOutlineIcon fontSize="small" />
@@ -211,24 +144,26 @@ const Post = ({ p }) => {
           <div className="post_footerItem">
             <RepeatIcon
               fontSize="small"
-              onClick={handleRetweets}
+              onClick={(e) => handleRetweets(e)}
               style={{ color: hasRetweeted ? "grey" : "green" }}
             />
-            <span>{retweet}</span>
+            <span>{p?.retweets?.length}</span>
           </div>
-          <div className="post_footerItem" onClick={handleLikes}>
+          <div className="post_footerItem">
             <FavoriteBorderIcon
               fontSize="small"
               style={{ color: hasLiked ? "grey" : "red" }}
+              onClick={(e) => handleLikes(e)}
             />
-            <span>{like}</span>
+            <span>{p?.likes?.length}</span>
           </div>
-          <div className="post_footerItem" onClick={handleUpvote}>
+          <div className="post_footerItem">
             <ThumbUpIcon
               fontSize="small"
               style={{ color: hasUpvoted ? "grey" : "blue" }}
+              onClick={(e) => handleUpvote(e)}
             />
-            <span>{votes}</span>
+            <span>{p?.upvotes?.length}</span>
           </div>
         </div>
       </div>

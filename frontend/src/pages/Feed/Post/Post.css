@@ -1,8 +1,15 @@
 .post {
   display: flex;
-  align-items: flex-start;
+  flex-direction: flex-start;
   border-bottom: 1px solid var(--twitter-background);
   padding-bottom: 10px;
+}
+
+.post_content {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
 }
 
 .post_body {
@@ -12,6 +19,14 @@
 
 .post_body > img {
   border-radius: 20px;
+}
+
+.post_date {
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: gray;
+  text-align: right;
 }
 
 .post_footer {

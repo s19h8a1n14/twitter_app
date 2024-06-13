@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, Button, Modal, Box, TextField } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import "./TweetBox.css";
 import axios from "axios";
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -10,8 +9,8 @@ import auth from "../../../firebase.init";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@chakra-ui/react";
 import Snackbar from "@mui/material/Snackbar";
-import VideoCall from "@mui/icons-material/VideoCall";
 import { Link } from "react-router-dom";
+import "./TweetBox.css"; // Assuming the styles are saved in a TweetBox.css file
 
 const TweetBox = () => {
   const [post, setPost] = useState("");
@@ -35,7 +34,7 @@ const TweetBox = () => {
   const [otp4, setOtp4] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
-  // For otp verfication
+  // For otp verification
   const [otp, setOtp] = useState("");
 
   const userProfilePic = loggedInUser[0]?.profileImage
@@ -47,9 +46,8 @@ const TweetBox = () => {
     setOpen(false);
   };
 
-  const handleTweet = (e) => {
-    e.preventDefault();
-    if (user.providerData[0].providerId === "password") {
+  useEffect(() => {
+    if (user?.providerData[0].providerId === "password") {
       fetch(`http://localhost:5000/loggedInUser?email=${email}`)
         .then((res) => res.json())
         .then((data) => {
@@ -60,6 +58,12 @@ const TweetBox = () => {
       setUsername(email?.split("@")[0]);
       setName(user.displayName);
     }
+  }, [email, user]);
+
+  const handleTweet = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
     if (name) {
       const userPost = {
         profilePhoto: userProfilePic,
@@ -69,56 +73,52 @@ const TweetBox = () => {
         username: username,
         name: name,
         email: email,
-        upvotes: videoURL ? 1 : 0,
-        likes: 0,
-        retweets: 0,
+        upvotes: videoURL ? [] : 0,
+        likes: [],
+        retweets: [],
       };
-      console.log(userPost);
-      setPost("");
-      setImageURL("");
-      setVideoURL("");
-      fetch("http://localhost:5000/posts", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(userPost),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error === "Daily post limit reached") {
-            setDesc("Daily post limit reached");
-            setOpen(true);
-          }
-          console.log(data);
-        })
-        .catch((error) => {
-          console.log(error);
+
+      try {
+        const response = await fetch("http://localhost:5000/posts", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(userPost),
         });
+        const data = await response.json();
+        if (data.error === "Daily post limit reached") {
+          setDesc("Daily post limit reached");
+          setOpen(true);
+        }
+      } catch (error) {
+        console.error("Error posting tweet:", error);
+      } finally {
+        setIsLoading(false);
+        setPost("");
+        setImageURL("");
+        setVideoURL("");
+      }
     }
   };
 
-  const handleUploadImage = (e) => {
+  const handleUploadImage = async (e) => {
     setImageLoading(true);
     const image = e.target.files[0];
-    console.log(image);
 
     const formData = new FormData();
     formData.set("image", image);
-    axios
-      .post(
+    try {
+      const res = await axios.post(
         "https://api.imgbb.com/1/upload?key=4d85ebb9be2bdb170d589f63edf099ae",
         formData
-      )
-      .then((res) => {
-        setImageURL(res.data.data.display_url);
-        console.log(res.data.data.display_url);
-        setImageLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setImageLoading(false);
-      });
+      );
+      setImageURL(res.data.data.display_url);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+    } finally {
+      setImageLoading(false);
+    }
   };
 
   const MAX_VIDEO_SIZE = 1048;
@@ -136,7 +136,6 @@ const TweetBox = () => {
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
       setDesc("Video size exceeds maximum limit.");
       setOpen(true);
-
       return;
     }
 
@@ -366,7 +365,7 @@ const TweetBox = () => {
         <div className="imageIcon_tweetButton">
           <label htmlFor="video" className="imageIcon">
             {videoLoading ? (
-              <p>Loading...</p>
+              <p>{t("Loading...")}</p>
             ) : (
               <p>{videoURL ? t("Video uploaded") : <VideoCallIcon />}</p>
             )}
@@ -379,7 +378,11 @@ const TweetBox = () => {
             onChange={handleUploadVideo}
           />
         </div>
-        <Button className="tweetBox__tweetButton" type="submit">
+        <Button
+          className="tweetBox__tweetButton"
+          type="submit"
+          disabled={isLoading}
+        >
           {t("Tweet")}
         </Button>
       </form>
