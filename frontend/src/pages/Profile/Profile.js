@@ -7,7 +7,7 @@ import auth from "../../firebase.init";
 const Profile = () => {
   const [user] = useAuthState(auth);
   return (
-    <div className="profilePage">
+    <div>
       <MainPage user={user} />
     </div>
   );

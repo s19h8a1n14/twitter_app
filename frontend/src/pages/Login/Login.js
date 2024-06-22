@@ -8,6 +8,7 @@ import {
 import auth from "../../firebase.init";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Login.css";
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -36,6 +37,10 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(email, password);
+    const response = axios.post("http://localhost:5000/login", { email });
+    console.log(response);
+    if (response.status === 200) {
+    }
     signInWithEmailAndPassword(email, password);
   };
 

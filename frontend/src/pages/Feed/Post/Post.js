@@ -3,6 +3,7 @@ import { Avatar, Button } from "@mui/material";
 import ButtonBase from "@mui/material/ButtonBase";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -26,14 +27,19 @@ const Post = ({ p }) => {
     retweets,
   } = p;
   const [loggedInUser] = UseLoggedInUser();
+  const email = loggedInUser[0]?.email;
+  console.log(email);
   const subscribed = loggedInUser[0]?.subscription;
+
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
   const [hasRetweeted, setHasRetweeted] = useState(false);
+  const [hasBookmarked, setHasBookmarked] = useState(false);
   const navigate = useNavigate();
 
   const handleUpvote = async (e) => {
     e.stopPropagation();
+
     try {
       const response = await fetch(
         `http://localhost:5000/posts/${p._id}/upvote`,
@@ -53,6 +59,7 @@ const Post = ({ p }) => {
 
   const handleLikes = async (e) => {
     e.stopPropagation();
+    //console.log(subscribed);
     try {
       const response = await fetch(
         `http://localhost:5000/posts/${p._id}/like`,
@@ -71,8 +78,34 @@ const Post = ({ p }) => {
     setHasLiked(!hasLiked);
   };
 
+  const handleBookmarks = async (e) => {
+    e.stopPropagation();
+    //console.log(subscribed);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/posts/${p._id}/bookmark`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: email }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+    setHasBookmarked(!hasBookmarked);
+  };
+
   const handleRetweets = async (e) => {
     e.stopPropagation();
+    //console.log(subscribed);
     try {
       const response = await fetch(
         `http://localhost:5000/posts/${p._id}/retweet`,
@@ -156,6 +189,14 @@ const Post = ({ p }) => {
               onClick={(e) => handleLikes(e)}
             />
             <span>{p?.likes?.length}</span>
+          </div>
+          <div className="post_footerItem">
+            <BookmarkIcon
+              fontSize="small"
+              style={{ color: hasBookmarked ? "grey" : "red" }}
+              onClick={(e) => handleBookmarks(e)}
+            />
+            <span>{p?.bookmarks?.length}</span>
           </div>
           <div className="post_footerItem">
             <ThumbUpIcon

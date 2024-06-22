@@ -76,6 +76,7 @@ const TweetBox = () => {
         upvotes: videoURL ? [] : 0,
         likes: [],
         retweets: [],
+        bookmarks: [],
       };
 
       try {

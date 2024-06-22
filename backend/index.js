@@ -4,6 +4,8 @@ const cors = require("cors");
 const { MongoClient } = require("mongodb");
 require("dotenv").config({ path: "../.env" });
 const mongoose = require("mongoose");
+const useragent = require("express-useragent");
+const geoip = require("geoip-lite");
 
 var nm = require("nodemailer");
 
@@ -11,6 +13,7 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
+app.use(useragent.express());
 
 let savedOTPS = {};
 var transporter = nm.createTransport({
@@ -105,100 +108,100 @@ app.post(
           subject: "Subscription Successfull",
           text: `Your subscription is successfull`,
           html: `
-        <div class="container mt-6 mb-7">
-          <div class="row justify-content-center">
-            <div class="col-lg-12 col-xl-7">
-              <div class="card">
-                <div class="card-body p-5">
-                  <h2>
-                    Hey ${session.customer_details.name},
-                  </h2>
-                  <p class="fs-sm">
-                    This is the receipt for a payment of <strong>${amountPaid}</strong> (Rupee) you made to Twitter Subscription.
-                  </p>
+          <div class="container mt-6 mb-7">
+            <div class="row justify-content-center">
+              <div class="col-lg-12 col-xl-7">
+                <div class="card">
+                  <div class="card-body p-5">
+                    <h2>
+                      Hey ${session.customer_details.name},
+                    </h2>
+                    <p class="fs-sm">
+                      This is the receipt for a payment of <strong>${amountPaid}</strong> (Rupee) you made to Twitter Subscription.
+                    </p>
 
-                  <div class="border-top border-gray-200 pt-4 mt-4">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="text-muted mb-2">Payment No.</div>
-                        <strong>#${session.subscription}</strong>
+                    <div class="border-top border-gray-200 pt-4 mt-4">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="text-muted mb-2">Payment No.</div>
+                          <strong>#${session.subscription}</strong>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                          <div class="text-muted mb-2">Payment Date</div>
+                          <strong>${Date.now}</strong>
+                        </div>
                       </div>
-                      <div class="col-md-6 text-md-end">
-                        <div class="text-muted mb-2">Payment Date</div>
-                        <strong>${Date.now}</strong>
+                    </div>
+
+                    <div class="border-top border-gray-200 mt-4 py-4">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="text-muted mb-2">Client</div>
+                          <strong>
+                            ${session.customer_details.name}
+                          </strong>
+                          <p class="fs-sm">
+                            
+                            <br>
+                            <a href="#!" class="text-purple">${session.customer_details.email}
+                            </a>
+                          </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                          <div class="text-muted mb-2">Payment To</div>
+                          <strong>
+                            Twitter ${subscriptionType} Subscription
+                          </strong>
+                          <p class="fs-sm">
+                            NIT Durgapur
+                            <br>
+                            <a href="#!" class="text-purple">balajikurakula8@gmail.com
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <table class="table border-bottom border-gray-200 mt-3">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm px-0">Description</th>
+                          <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="px-0">${subscriptionType} Subscription</td>
+                          <td class="text-end px-0">${amountPaid}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <div class="mt-5">
+                      <div class="d-flex justify-content-end">
+                        <p class="text-muted me-3">Subtotal:</p>
+                        <span>${amountPaid}</span>
+                      </div>
+                      <div class="d-flex justify-content-end">
+                        
+                      </div>
+                      <div class="d-flex justify-content-end mt-3">
+                        <h5 class="me-3">Total:</h5>
+                        <h5 class="text-success">${amountPaid}</h5>
                       </div>
                     </div>
                   </div>
-
-                  <div class="border-top border-gray-200 mt-4 py-4">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="text-muted mb-2">Client</div>
-                        <strong>
-                          ${session.customer_details.name}
-                        </strong>
-                        <p class="fs-sm">
-                          
-                          <br>
-                          <a href="#!" class="text-purple">${session.customer_details.email}
-                          </a>
-                        </p>
-                      </div>
-                      <div class="col-md-6 text-md-end">
-                        <div class="text-muted mb-2">Payment To</div>
-                        <strong>
-                          Twitter ${subscriptionType} Subscription
-                        </strong>
-                        <p class="fs-sm">
-                          NIT Durgapur
-                          <br>
-                          <a href="#!" class="text-purple">balajikurakula8@gmail.com
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <table class="table border-bottom border-gray-200 mt-3">
-                    <thead>
-                      <tr>
-                        <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm px-0">Description</th>
-                        <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="px-0">${subscriptionType} Subscription</td>
-                        <td class="text-end px-0">${amountPaid}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <div class="mt-5">
-                    <div class="d-flex justify-content-end">
-                      <p class="text-muted me-3">Subtotal:</p>
-                      <span>${amountPaid}</span>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                      
-                    </div>
-                    <div class="d-flex justify-content-end mt-3">
-                      <h5 class="me-3">Total:</h5>
-                      <h5 class="text-success">${amountPaid}</h5>
-                    </div>
-                  </div>
+                  <a href="#!" class="btn btn-dark btn-lg card-footer-btn justify-content-center text-uppercase-bold-sm hover-lift-light">
+                    <span class="svg-icon text-white me-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-g</title><path d="M336,208V113a80,80,0,0,0-160,0v95" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><rect x="96" y="208" width="320" height="272" rx="48" ry="48" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></rect></svg>
+                    </span>
+                    Payment Status : ${session.payment_status}
+                  </a>
                 </div>
-                <a href="#!" class="btn btn-dark btn-lg card-footer-btn justify-content-center text-uppercase-bold-sm hover-lift-light">
-                  <span class="svg-icon text-white me-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-g</title><path d="M336,208V113a80,80,0,0,0-160,0v95" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><rect x="96" y="208" width="320" height="272" rx="48" ry="48" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></rect></svg>
-                  </span>
-                  Payment Status : ${session.payment_status}
-                </a>
               </div>
             </div>
           </div>
-        </div>
-        `,
+          `,
         });
 
         console.log("Message sent: %s", info.messageId);
@@ -264,6 +267,9 @@ app.post("/verify", (req, res) => {
 const uri = process.env.MONGO_URL;
 const client = new MongoClient(uri, {});
 
+const ALLOWED_START_HOUR = 9; // 9 AM
+const ALLOWED_END_HOUR = 17; // 5 PM
+
 async function run() {
   try {
     await client.connect();
@@ -294,6 +300,26 @@ async function run() {
       ).reverse();
       res.send(posts);
     });
+
+    app.get("/userBookmarks", async (req, res) => {
+      const email = req.query.email;
+      const user = await userCollection.findOne({ email: email });
+
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+
+      const bookmarkedPostIds = user.bookmarks.map(
+        (bookmarkId) => new mongoose.Types.ObjectId(bookmarkId)
+      );
+
+      const bookmarkedPosts = await postCollection
+        .find({ _id: { $in: bookmarkedPostIds } })
+        .toArray();
+
+      res.json(bookmarkedPosts);
+    });
+
     app.get("/userPostCount", async (req, res) => {
       try {
         const email = req.query.email;
@@ -356,8 +382,92 @@ async function run() {
       user.isSubscribed = 0;
       user.postCount = 0;
       user.subscriptionExpiry = Date.now();
+
+      // Capture user agent information
+      const userAgent = req.useragent;
+      const browser = userAgent.browser;
+      const os = userAgent.os;
+      const device = userAgent.isMobile
+        ? "Mobile"
+        : userAgent.isDesktop
+        ? "Desktop"
+        : "Unknown";
+
+      // Capture IP address
+      const ipAddress =
+        req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+      // Get geographical information from IP address (optional)
+      const geo = geoip.lookup(ipAddress);
+
+      user.browser = browser;
+      user.os = os;
+      user.device = device;
+      user.ipAddress = ipAddress;
+      user.geo = geo;
+      user.bookmarks = [];
+
       const result = await userCollection.insertOne(user);
       res.send(result);
+    });
+
+    app.post("/login", async (req, res) => {
+      const email = req.body.email;
+
+      console.log(email);
+
+      const user = await userCollection.findOne({ email: email });
+
+      console.log(user);
+
+      // Capture user agent information
+      const userAgent = req.useragent;
+      const browser = userAgent.browser;
+      const os = userAgent.os;
+      const device = userAgent.isMobile
+        ? "Mobile"
+        : userAgent.isDesktop
+        ? "Desktop"
+        : "Unknown";
+
+      // Capture IP address
+      const ipAddress =
+        req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+
+      const currentHour = new Date().getHours();
+
+      if (
+        device === "Mobile" &&
+        (currentHour < ALLOWED_START_HOUR || currentHour >= ALLOWED_END_HOUR)
+      ) {
+        console.log("Desktop logins are only allowed between 9 AM and 5 PM.");
+        return res
+          .status(403)
+          .send("Mobile logins are only allowed between 9 AM and 5 PM.");
+      }
+
+      // Get geographical information from IP address (optional)
+      const geo = geoip.lookup(ipAddress);
+      if (user) {
+        await userCollection.updateOne(
+          { email: email },
+          {
+            $push: {
+              loginHistory: {
+                date: new Date(),
+                browser: browser,
+                os: os,
+                device: device,
+                ipAddress: ipAddress,
+                geo: geo,
+              },
+            },
+          }
+        );
+        res.status(200).send("Login successful.");
+      } else {
+        res.status(404).send("User not found.");
+      }
     });
 
     app.patch("/posts/:id/upvote", async (req, res) => {
@@ -435,6 +545,70 @@ async function run() {
           { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
           updateDoc,
           options
+        );
+
+        res.json(updatedPost);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+      }
+    });
+
+    app.patch("/posts/:id/bookmark", async (req, res) => {
+      try {
+        const { id } = req.params;
+        const email = req.body.email;
+        const post = await postCollection.findOne({
+          _id: new mongoose.Types.ObjectId(id),
+        });
+        if (!post) {
+          return res.status(404).send("Post not found");
+        }
+
+        //const email = post.email;
+        const user = await userCollection.findOne({ email: email });
+
+        //console.log("User:", user);
+        const userId = String(user._id);
+        //console.log("User ID:", userId);
+
+        const index = post.bookmarks.findIndex(
+          (likeId) => likeId === String(userId)
+        );
+
+        //console.log("Index:", index);
+        const postId = String(post._id);
+
+        //console.log("Post ID:", postId);
+
+        if (index === -1) {
+          // Add post's ID to user's bookmarks if not already bookmarked
+          user.bookmarks.push(postId);
+          //console.log("User bookmarks:", user.bookmarks);
+          post.bookmarks.push(userId);
+          //console.log("Post bookmarks:", post.bookmarks); // Assuming you want to track who bookmarked the post
+        } else {
+          // If already bookmarked, remove the post's ID from user's bookmarks
+          user.bookmarks = user.bookmarks.filter(
+            (bookmarkId) => bookmarkId !== postId
+          );
+          //console.log("User bookmarks:", user.bookmarks);
+          post.bookmarks = post.bookmarks.filter((likeId) => likeId !== userId);
+          //console.log("Post bookmarks:", post.bookmarks);
+        }
+
+        const updateDoc = { $set: { bookmarks: post.bookmarks } };
+        const options = { upsert: true };
+
+        const updatedPost = await postCollection.updateOne(
+          { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
+          updateDoc,
+          options
+        );
+
+        await userCollection.updateOne(
+          { email: email },
+          { $set: { bookmarks: user.bookmarks } }
         );
 
         res.json(updatedPost);
