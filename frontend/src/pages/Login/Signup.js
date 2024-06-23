@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TwitterImage from "../../assets/images/twitter.jpeg";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import auth from "../../firebase.init";
@@ -25,6 +25,22 @@ const Signup = () => {
   const [signInWithGoogle, googleUser, googleLoading, googleError] =
     useSignInWithGoogle(auth);
 
+  useEffect(() => {
+    if (user || googleUser) {
+      const currentUser = user || googleUser.user;
+      const userData = {
+        userName: userName || currentUser.displayName,
+        name: name || currentUser.displayName,
+        email: currentUser.email,
+        points: 0,
+        subscription: false,
+      };
+      axios.post("http://localhost:5000/register", userData).then(() => {
+        navigate("/");
+      });
+    }
+  }, [user, googleUser]);
+
   if (user || googleUser) {
     navigate("/");
     console.log(user);
@@ -42,18 +58,18 @@ const Signup = () => {
     console.log(email, password);
     createUserWithEmailAndPassword(email, password);
 
-    let points = 0;
-    let subscription = false;
+    // let points = 0;
+    // let subscription = false;
 
-    const user = {
-      userName: userName,
-      name: name,
-      email: email,
-      points: points,
-      subscription: subscription,
-    };
-    const { data } = axios.post("http://localhost:5000/register", user);
-    console.log(data);
+    // const user = {
+    //   userName: userName,
+    //   name: name,
+    //   email: email,
+    //   points: points,
+    //   subscription: subscription,
+    // };
+    // const { data } = axios.post("http://localhost:5000/register", user);
+    // console.log(data);
   };
 
   const handleGoogleSignIn = () => {

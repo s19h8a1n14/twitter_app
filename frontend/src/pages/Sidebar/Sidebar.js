@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import "./Sidebar.css";
 import SidebarOptions from "./SidebarOptions";
 import HomeIcon from "@mui/icons-material/Home";
@@ -25,6 +25,7 @@ import More from "@mui/icons-material/More";
 import UseLoggedInUser from "../../hooks/UseLoggedInUser";
 import { PointContext } from "../../PointContext";
 import { useTranslation } from "react-i18next";
+import LanguageSelector from "../Feed/LanguageSelector";
 
 const Sidebar = ({ handleLogout, user }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,9 +52,10 @@ const Sidebar = ({ handleLogout, user }) => {
   return (
     <div className="sidebar">
       <div className="icon">
-        <TwitterIcon className="sidebar_twitterIcon" />
+        <XIcon className="sidebar_twitterIcon" />
         <p className="point">{points}</p>
       </div>
+      <LanguageSelector />
       <CustomeLink to="/home/feed">
         <SidebarOptions active Icon={HomeIcon} text="Home" />
       </CustomeLink>

@@ -317,7 +317,10 @@ async function run() {
         .find({ _id: { $in: bookmarkedPostIds } })
         .toArray();
 
-      res.json(bookmarkedPosts);
+      // Reverse the order of the posts
+      const reversedBookmarkedPosts = bookmarkedPosts.reverse();
+
+      res.json(reversedBookmarkedPosts);
     });
 
     app.get("/userPostCount", async (req, res) => {
@@ -329,6 +332,26 @@ async function run() {
         res.send({ email, postCount });
       } catch (error) {
         res.status(500).json({ error: "Failed to fetch post count" });
+      }
+    });
+
+    app.get("/userId", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        return res.status(400).send("Email is required");
+      }
+      try {
+        const user = await userCollection.findOne({ email: email });
+        //console.log(user._id);
+        const userid = String(user._id);
+        //console.log(userid);
+        if (user) {
+          res.json({ userId: userid });
+        } else {
+          res.status(404).send("User not found");
+        }
+      } catch (error) {
+        res.status(500).send("Error fetching user ID");
       }
     });
 
@@ -412,7 +435,7 @@ async function run() {
     });
 
     app.post("/login", async (req, res) => {
-      const email = req.body.email;
+      const { email } = req.body;
 
       console.log(email);
 
@@ -467,6 +490,78 @@ async function run() {
         res.status(200).send("Login successful.");
       } else {
         res.status(404).send("User not found.");
+      }
+    });
+
+    app.patch("/monthly", async (req, res) => {
+      const email = req.query.email;
+
+      try {
+        const user = await userCollection.findOne({ email });
+        //console.log(user);
+
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+
+        const newPoints = user.points - 4;
+
+        if (newPoints < 0) {
+          return res.status(400).send({ message: "Insufficient points" });
+        }
+
+        await userCollection.updateOne(
+          { email: email },
+          {
+            $set: {
+              subscription: true,
+              isSubscribed: 1,
+              subscriptionExpiry: Date.now() + 2592000000, // 1 month in milliseconds
+              points: newPoints,
+            },
+          }
+        );
+
+        res.status(200).send({ message: "Subscription updated successfully" });
+      } catch (error) {
+        console.error("Error updating subscription:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+
+    app.patch("/monthly", async (req, res) => {
+      const email = req.query.email;
+
+      try {
+        const user = await userCollection.findOne({ email });
+        //console.log(user);
+
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+
+        const newPoints = user.points - 8;
+
+        if (newPoints < 0) {
+          return res.status(400).send({ message: "Insufficient points" });
+        }
+
+        await userCollection.updateOne(
+          { email: email },
+          {
+            $set: {
+              subscription: true,
+              isSubscribed: 2,
+              subscriptionExpiry: Date.now() + 2592000000, // 1 month in milliseconds
+              points: newPoints,
+            },
+          }
+        );
+
+        res.status(200).send({ message: "Subscription updated successfully" });
+      } catch (error) {
+        console.error("Error updating subscription:", error);
+        res.status(500).send({ message: "Internal server error" });
       }
     });
 

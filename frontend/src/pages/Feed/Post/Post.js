@@ -7,6 +7,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import PublishIcon from "@mui/icons-material/Publish";
 import "./Post.css";
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
@@ -35,7 +36,30 @@ const Post = ({ p }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [hasRetweeted, setHasRetweeted] = useState(false);
   const [hasBookmarked, setHasBookmarked] = useState(false);
+  const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/userId?email=${email}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setUserId(data.userId);
+        } else {
+          console.error("Failed to fetch user ID");
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+      }
+    };
+
+    if (email) {
+      fetchUserId();
+    }
+  }, [email]);
 
   const handleUpvote = async (e) => {
     e.stopPropagation();
@@ -126,8 +150,58 @@ const Post = ({ p }) => {
   const formattedDate = new Date(p.createdAt).toLocaleDateString();
   const formattedTime = new Date(p.createdAt).toLocaleTimeString();
 
-  const navigateTo = () => {
-    navigate(`/post/${p._id}`);
+  const Bookmarks = () => {
+    if (p?.bookmarks?.length > 0) {
+      return p?.bookmarks.find((bookmark) => bookmark === userId) ? (
+        <>
+          <BookmarkIcon fontSize="small" style={{ color: "blue" }} />
+          &nbsp;{p?.bookmarks?.length}
+        </>
+      ) : (
+        <>
+          <BookmarkIcon fontSize="small" style={{ color: "grey" }} />
+          &nbsp;{p?.bookmarks?.length}
+        </>
+      );
+    }
+
+    return <BookmarkIcon fontSize="small" style={{ color: "grey" }} />;
+  };
+
+  const Retweets = () => {
+    if (p?.retweets?.length > 0) {
+      return p?.retweets.find((retweet) => retweet === userId) ? (
+        <>
+          <RepeatIcon fontSize="small" style={{ color: "green" }} />
+          &nbsp;{p?.retweets?.length}
+        </>
+      ) : (
+        <>
+          <RepeatIcon fontSize="small" style={{ color: "grey" }} />
+          &nbsp;{p?.retweets?.length}
+        </>
+      );
+    }
+
+    return <RepeatIcon fontSize="small" style={{ color: "grey" }} />;
+  };
+
+  const Likes = () => {
+    if (p?.likes?.length > 0) {
+      return p?.likes.find((like) => like === userId) ? (
+        <>
+          <FavoriteIcon fontSize="small" style={{ color: "red" }} />
+          &nbsp;{p?.likes?.length}
+        </>
+      ) : (
+        <>
+          <FavoriteBorderIcon fontSize="small" style={{ color: "grey" }} />
+          &nbsp;{p?.likes?.length}
+        </>
+      );
+    }
+
+    return <FavoriteBorderIcon fontSize="small" style={{ color: "grey" }} />;
   };
 
   return (
@@ -162,6 +236,8 @@ const Post = ({ p }) => {
             style={{
               position: "relative",
               maxWidth: "100%",
+              maxHeight: "300px", // Ensure the video does not take the entire screen
+              width: "100%",
               justifyContent: "center",
             }}
             src={video}
@@ -174,30 +250,28 @@ const Post = ({ p }) => {
             <ChatBubbleOutlineIcon fontSize="small" />
             <span>0</span>
           </div>
-          <div className="post_footerItem">
-            <RepeatIcon
-              fontSize="small"
-              onClick={(e) => handleRetweets(e)}
-              style={{ color: hasRetweeted ? "grey" : "green" }}
-            />
-            <span>{p?.retweets?.length}</span>
-          </div>
-          <div className="post_footerItem">
-            <FavoriteBorderIcon
-              fontSize="small"
-              style={{ color: hasLiked ? "grey" : "red" }}
-              onClick={(e) => handleLikes(e)}
-            />
-            <span>{p?.likes?.length}</span>
-          </div>
-          <div className="post_footerItem">
+
+          <Button onClick={(e) => handleRetweets(e)}>
+            <Retweets />
+          </Button>
+
+          <Button onClick={(e) => handleLikes(e)}>
+            <Likes />
+          </Button>
+
+          <Button onClick={(e) => handleBookmarks(e)}>
+            <Bookmarks />
+          </Button>
+
+          {/* <div className="post_footerItem">
             <BookmarkIcon
               fontSize="small"
               style={{ color: hasBookmarked ? "grey" : "red" }}
               onClick={(e) => handleBookmarks(e)}
             />
             <span>{p?.bookmarks?.length}</span>
-          </div>
+          </div> */}
+
           <div className="post_footerItem">
             <ThumbUpIcon
               fontSize="small"

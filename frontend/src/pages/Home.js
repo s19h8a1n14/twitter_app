@@ -7,6 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../firebase.init";
 import { signOut } from "firebase/auth";
 import UseLoggedInUser from "../hooks/UseLoggedInUser";
+//import LanguageSelector from "./Feed/LanguageSelector";
 
 const Home = () => {
   const user = useAuthState(auth);
@@ -18,6 +19,7 @@ const Home = () => {
   return (
     <div className="app">
       <Sidebar handleLogout={handleLogout} user={user} />
+
       <Outlet />
       <Widgets />
     </div>

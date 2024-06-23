@@ -11,7 +11,7 @@
   display: none;
 }
 .sidebar_twitterIcon {
-  color: var(--twitter-color);
+  color: black;
   font-size: 35px !important;
   margin-left: 20px;
   margin-bottom: 10px;
@@ -64,5 +64,5 @@
   flex-direction: row;
 }
 .point {
-  color: var(--twitter-color);
+  color: black;
 }

@@ -1,10 +1,9 @@
 import React from "react";
-import "./Subscriptions.css";
 import UseLoggedInUser from "../../hooks/UseLoggedInUser";
 import { Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-function App({ onClose }) {
+function Subscribe({ onClose }) {
   const [loggedInUser] = UseLoggedInUser();
   const subscribed = loggedInUser[0]?.subscription;
   const plan = loggedInUser[0]?.isSubscribed;
@@ -61,9 +60,12 @@ function App({ onClose }) {
             )}
           </div>
         </div>
+        <Button className="close-button" onClick={onClose}>
+          Close
+        </Button>
       </header>
     </div>
   );
 }
 
-export default App;
+export default Subscribe;

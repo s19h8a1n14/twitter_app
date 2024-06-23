@@ -342,50 +342,54 @@ const TweetBox = () => {
             required
           />
         </div>
-        <div className="imageIcon_tweetButton">
-          <label htmlFor="image" className="imageIcon">
-            {imageLoading ? (
-              <p>{t("Loading...")}</p>
-            ) : (
-              <p>
-                {imageURL ? (
-                  t("Image uploaded")
+        <div className="tweet_upload">
+          <div className="upload">
+            <div className="imageIcon_tweetButton">
+              <label htmlFor="image" className="imageIcon">
+                {imageLoading ? (
+                  <p>{t("Loading...")}</p>
                 ) : (
-                  <AddPhotoAlternateOutlinedIcon />
+                  <p>
+                    {imageURL ? (
+                      t("Image uploaded")
+                    ) : (
+                      <AddPhotoAlternateOutlinedIcon />
+                    )}
+                  </p>
                 )}
-              </p>
-            )}
-          </label>
-          <input
-            type="file"
-            id="image"
-            className="imageInput"
-            onChange={handleUploadImage}
-          />
+              </label>
+              <input
+                type="file"
+                id="image"
+                className="imageInput"
+                onChange={handleUploadImage}
+              />
+            </div>
+            <div className="imageIcon_tweetButton">
+              <label htmlFor="video" className="imageIcon">
+                {videoLoading ? (
+                  <p>{t("Loading...")}</p>
+                ) : (
+                  <p>{videoURL ? t("Video uploaded") : <VideoCallIcon />}</p>
+                )}
+              </label>
+              <input
+                type="file"
+                id="video"
+                accept="video/*"
+                className="imageInput"
+                onChange={handleUploadVideo}
+              />
+            </div>
+          </div>
+          <Button
+            className="tweetBox__tweetButton"
+            type="submit"
+            disabled={isLoading}
+          >
+            {t("Tweet")}
+          </Button>
         </div>
-        <div className="imageIcon_tweetButton">
-          <label htmlFor="video" className="imageIcon">
-            {videoLoading ? (
-              <p>{t("Loading...")}</p>
-            ) : (
-              <p>{videoURL ? t("Video uploaded") : <VideoCallIcon />}</p>
-            )}
-          </label>
-          <input
-            type="file"
-            id="video"
-            accept="video/*"
-            className="imageInput"
-            onChange={handleUploadVideo}
-          />
-        </div>
-        <Button
-          className="tweetBox__tweetButton"
-          type="submit"
-          disabled={isLoading}
-        >
-          {t("Tweet")}
-        </Button>
       </form>
       <Link to="/home/subscribe">
         <Snackbar

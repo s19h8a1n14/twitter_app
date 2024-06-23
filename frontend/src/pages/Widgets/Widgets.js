@@ -7,31 +7,38 @@ import {
 } from "react-twitter-embed";
 import "./Widgets.css";
 import { useTranslation } from "react-i18next";
+import SubscriptionBox from "./SubscriptionBox";
 
 const Widgets = () => {
   const { t } = useTranslation();
+
+  const handleSubscribe = () => {};
   return (
-    <div className="widgets">
-      <div className="widgets__input">
-        <SearchIcon className="widgets__searchIcon" />
-        <input placeholder={t("Search Twitter")} type="text" />
-      </div>
+    <div className="box">
+      <div className="widgets">
+        <div className="widgets__input">
+          <SearchIcon className="widgets__searchIcon" />
+          <input placeholder={t("Search Twitter")} type="text" />
+        </div>
 
-      <div className="widgets__widgetContainer">
-        <h2>{t("What's happening")}</h2>
+        <SubscriptionBox />
 
-        <TwitterTweetEmbed tweetId={"1557187138352861186"} />
+        <div className="widgets__widgetContainer">
+          <h2>{t("What's happening")}</h2>
 
-        <TwitterTimelineEmbed
-          sourceType="profile"
-          screenName="elonmusk"
-          options={{ height: 400 }}
-        />
+          <TwitterTweetEmbed tweetId={"1557187138352861186"} />
 
-        <TwitterShareButton
-          url={"https://facebook.com/cleverprogrammer"}
-          options={{ text: "#reactjs is awesome", via: "elonmusk" }}
-        />
+          <TwitterTimelineEmbed
+            sourceType="profile"
+            screenName="elonmusk"
+            options={{ height: 400 }}
+          />
+
+          <TwitterShareButton
+            url={"https://facebook.com/cleverprogrammer"}
+            options={{ text: "#reactjs is awesome", via: "elonmusk" }}
+          />
+        </div>
       </div>
     </div>
   );

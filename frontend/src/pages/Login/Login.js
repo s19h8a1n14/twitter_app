@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TwitterImage from "../../assets/images/twitter.jpeg";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import {
@@ -27,6 +27,24 @@ const Login = () => {
     console.log(user);
     console.log(googleUser);
   }
+
+  useEffect(() => {
+    if (user || googleUser) {
+      const currentUser = user || googleUser.user;
+      const userData = {
+        email: currentUser.email,
+      };
+      axios
+        .post("http://localhost:5000/login", userData)
+        .then(() => {
+          navigate("/");
+        })
+        .catch((err) => {
+          console.error("Error logging in:", err);
+        });
+    }
+  }, [user, googleUser, navigate]);
+
   if (error) {
     console.log(error.message);
   }
@@ -37,10 +55,10 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(email, password);
-    const response = axios.post("http://localhost:5000/login", { email });
-    console.log(response);
-    if (response.status === 200) {
-    }
+    // const response = axios.post("http://localhost:5000/login", { email });
+    // console.log(response);
+    // if (response.status === 200) {
+    // }
     signInWithEmailAndPassword(email, password);
   };
 

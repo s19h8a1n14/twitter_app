@@ -1,7 +1,12 @@
+.box {
+  width: 300px;
+}
+
 .widgets {
   flex: 0.3;
   min-width: fit-content;
   overflow-y: scroll;
+  /* width: 100px; */
 }
 
 .widgets::-webkit-scrollbar {

@@ -10,7 +10,7 @@ const CustomeLink = ({ children, to, ...props }) => {
         to={to}
         style={{
           textDecoration: "none",
-          color: match ? "var(--twitter-color)" : "black",
+          color: match ? "black" : "black",
         }}
         {...props}
       >

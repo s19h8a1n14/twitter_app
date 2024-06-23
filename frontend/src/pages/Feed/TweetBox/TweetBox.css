@@ -3,7 +3,17 @@
   border-bottom: 8px solid var(--twitter-background);
   padding-right: 10px;
 }
+.tweet_upload {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.upload {
+  display: flex;
 
+  align-items: center;
+  padding: 10px;
+}
 .tweetBox > form {
   display: flex;
   flex-direction: column;

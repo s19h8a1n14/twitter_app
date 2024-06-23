@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../firebase.init";
 import Post from "../Feed/Post/Post";
+import { TextField } from "@mui/material";
 import "../Page.css";
+import "./Bookmarks.css";
 
 const Bookmarks = () => {
   const [posts, setPosts] = useState([]);
@@ -17,9 +19,16 @@ const Bookmarks = () => {
   }, [posts, user?.email]);
   return (
     <div>
-      {posts.map((p) => (
-        <Post id={p._id} p={p} />
-      ))}
+      <div className="feed">
+        <div>
+          <h1>Bookmarks</h1>
+        </div>
+        <div>
+          {posts.map((p) => (
+            <Post id={p._id} p={p} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

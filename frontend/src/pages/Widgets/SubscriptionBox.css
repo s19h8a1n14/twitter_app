@@ -1,0 +1,39 @@
+.subscription-box {
+  border: 1px solid #e1e8ed;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #f5f8fa;
+  text-align: flex-start;
+  margin: 20px 0;
+}
+
+.subscription-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.subscription-text {
+  font-size: 14px;
+  color: #657786;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+}
+
+.subscribe-buttons {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.subscribe-button:hover {
+  background-color: black;
+}
