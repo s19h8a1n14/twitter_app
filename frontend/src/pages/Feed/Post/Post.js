@@ -29,7 +29,7 @@ const Post = ({ p }) => {
   } = p;
   const [loggedInUser] = UseLoggedInUser();
   const email = loggedInUser[0]?.email;
-  console.log(email);
+
   const subscribed = loggedInUser[0]?.subscription;
 
   const [hasUpvoted, setHasUpvoted] = useState(false);
@@ -66,7 +66,7 @@ const Post = ({ p }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/upvote`,
+        `http://localhost:5000/posts/${p._id}/upvote?email=${email}`,
         {
           method: "PATCH",
         }
@@ -86,7 +86,7 @@ const Post = ({ p }) => {
     //console.log(subscribed);
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/like`,
+        `http://localhost:5000/posts/${p._id}/like?email=${email}`,
         {
           method: "PATCH",
         }
@@ -132,7 +132,7 @@ const Post = ({ p }) => {
     //console.log(subscribed);
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/retweet`,
+        `http://localhost:5000/posts/${p._id}/retweet?email=${email}`,
         {
           method: "PATCH",
         }
@@ -262,15 +262,6 @@ const Post = ({ p }) => {
           <Button onClick={(e) => handleBookmarks(e)}>
             <Bookmarks />
           </Button>
-
-          {/* <div className="post_footerItem">
-            <BookmarkIcon
-              fontSize="small"
-              style={{ color: hasBookmarked ? "grey" : "red" }}
-              onClick={(e) => handleBookmarks(e)}
-            />
-            <span>{p?.bookmarks?.length}</span>
-          </div> */}
 
           <div className="post_footerItem">
             <ThumbUpIcon

@@ -28,10 +28,14 @@ const Signup = () => {
   useEffect(() => {
     if (user || googleUser) {
       const currentUser = user || googleUser.user;
+      // console.log(currentUser.user.email);
+      // console.log(currentUser.displayName);
+      // console.log(currentUser.email);
+
       const userData = {
-        userName: userName || currentUser.displayName,
-        name: name || currentUser.displayName,
-        email: currentUser.email,
+        userName: userName || currentUser.user.displayName,
+        name: name || currentUser.user.displayName,
+        email: currentUser.user.email,
         points: 0,
         subscription: false,
       };

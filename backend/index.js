@@ -568,6 +568,7 @@ async function run() {
     app.patch("/posts/:id/upvote", async (req, res) => {
       try {
         const { id } = req.params;
+        const email = req.query.email;
         const post = await postCollection.findOne({
           _id: new mongoose.Types.ObjectId(id),
         });
@@ -575,7 +576,6 @@ async function run() {
           return res.status(404).send("Post not found");
         }
 
-        const email = post.email;
         const user = await userCollection.findOne({ email: email });
         const userId = String(user._id);
 
@@ -610,6 +610,7 @@ async function run() {
     app.patch("/posts/:id/like", async (req, res) => {
       try {
         const { id } = req.params;
+        const email = req.query.email;
         const post = await postCollection.findOne({
           _id: new mongoose.Types.ObjectId(id),
         });
@@ -617,7 +618,6 @@ async function run() {
           return res.status(404).send("Post not found");
         }
 
-        const email = post.email;
         const user = await userCollection.findOne({ email: email });
         const userId = String(user._id);
 
@@ -716,6 +716,8 @@ async function run() {
     app.patch("/posts/:id/retweet", async (req, res) => {
       try {
         const { id } = req.params;
+        const email = req.query.email;
+        console.log(email);
         const post = await postCollection.findOne({
           _id: new mongoose.Types.ObjectId(id),
         });
@@ -723,7 +725,6 @@ async function run() {
           return res.status(404).send("Post not found");
         }
 
-        const email = post.email;
         const user = await userCollection.findOne({ email: email });
         const userId = String(user._id);
 
