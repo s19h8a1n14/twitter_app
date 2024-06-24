@@ -36,11 +36,19 @@ const Login = () => {
       };
       axios
         .post("http://localhost:5000/login", userData)
-        .then(() => {
-          navigate("/");
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            navigate("/");
+          } else {
+            console.error("Failed to login");
+          }
         })
         .catch((err) => {
           console.error("Error logging in:", err);
+          setErrorMessage(
+            err.response ? err.response.data : "An error occurred"
+          );
         });
     }
   }, [user, googleUser, navigate]);
@@ -55,10 +63,6 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(email, password);
-    // const response = axios.post("http://localhost:5000/login", { email });
-    // console.log(response);
-    // if (response.status === 200) {
-    // }
     signInWithEmailAndPassword(email, password);
   };
 

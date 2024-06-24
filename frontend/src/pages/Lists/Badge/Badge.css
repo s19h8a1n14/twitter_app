@@ -1,0 +1,26 @@
+.badge-container {
+  background-color: #ffffff;
+  border: 2px solid #ececec;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 200px;
+}
+
+.badge-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffba08;
+  margin-bottom: 10px;
+}
+
+.badge-description {
+  font-size: 14px;
+  color: #606060;
+}
+
+.badge-container.received {
+  background-color: #bbe9ff;
+}

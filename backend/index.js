@@ -429,6 +429,8 @@ async function run() {
       user.ipAddress = ipAddress;
       user.geo = geo;
       user.bookmarks = [];
+      user.likes = [];
+      user.retweets = [];
 
       const result = await userCollection.insertOne(user);
       res.send(result);
@@ -437,11 +439,11 @@ async function run() {
     app.post("/login", async (req, res) => {
       const { email } = req.body;
 
-      console.log(email);
+      //console.log(email);
 
       const user = await userCollection.findOne({ email: email });
 
-      console.log(user);
+      //console.log(user);
 
       // Capture user agent information
       const userAgent = req.useragent;
@@ -459,13 +461,15 @@ async function run() {
 
       const currentHour = new Date().getHours();
 
+      console.log(currentHour);
+
       if (
-        device === "Mobile" &&
+        device === "Desktop" &&
         (currentHour < ALLOWED_START_HOUR || currentHour >= ALLOWED_END_HOUR)
       ) {
         console.log("Desktop logins are only allowed between 9 AM and 5 PM.");
         return res
-          .status(403)
+          .status(400)
           .send("Mobile logins are only allowed between 9 AM and 5 PM.");
       }
 
@@ -618,8 +622,16 @@ async function run() {
           return res.status(404).send("Post not found");
         }
 
+        const postId = String(post._id);
+        //console.log(postId);
+
         const user = await userCollection.findOne({ email: email });
         const userId = String(user._id);
+
+        const postEmail = post.email;
+        const postUser = await userCollection.findOne({ email: postEmail });
+
+        //console.log(postUser);
 
         const index = post.likes.findIndex(
           (likeId) => likeId === String(userId)
@@ -628,9 +640,11 @@ async function run() {
         if (index === -1) {
           // like the post
           post.likes.push(userId);
+          postUser.likes.push(postId);
         } else {
           // dislike the post
           post.likes = post.likes.filter((likeId) => likeId !== userId);
+          postUser.likes = postUser.likes.filter((likeId) => likeId !== postId);
         }
 
         const updateDoc = { $set: { likes: post.likes } };
@@ -640,6 +654,11 @@ async function run() {
           { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
           updateDoc,
           options
+        );
+
+        await userCollection.updateOne(
+          { email: postEmail },
+          { $set: { likes: postUser.likes } }
         );
 
         res.json(updatedPost);
@@ -725,8 +744,13 @@ async function run() {
           return res.status(404).send("Post not found");
         }
 
+        const postId = String(post._id);
+
         const user = await userCollection.findOne({ email: email });
         const userId = String(user._id);
+
+        const postEmail = post.email;
+        const postUser = await userCollection.findOne({ email: postEmail });
 
         const index = post.retweets.findIndex(
           (likeId) => likeId === String(userId)
@@ -735,9 +759,13 @@ async function run() {
         if (index === -1) {
           // like the post
           post.retweets.push(userId);
+          postUser.retweets.push(postId);
         } else {
           // dislike the post
           post.retweets = post.retweets.filter((likeId) => likeId !== userId);
+          postUser.retweets = postUser.retweets.filter(
+            (likeId) => likeId !== postId
+          );
         }
 
         const updateDoc = { $set: { retweets: post.retweets } };
@@ -747,6 +775,11 @@ async function run() {
           { _id: new mongoose.Types.ObjectId(id) }, // Corrected selector
           updateDoc,
           options
+        );
+
+        await userCollection.updateOne(
+          { email: postEmail },
+          { $set: { retweets: postUser.retweets } }
         );
 
         res.json(updatedPost);

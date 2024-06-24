@@ -77,6 +77,7 @@ const TweetBox = () => {
         likes: [],
         retweets: [],
         bookmarks: [],
+        subscribed: subscribed,
       };
 
       try {

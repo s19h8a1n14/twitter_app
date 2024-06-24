@@ -24,13 +24,11 @@ const Post = ({ p }) => {
     post,
     profilePhoto,
     upvotes,
-
+    subscribed,
     retweets,
   } = p;
   const [loggedInUser] = UseLoggedInUser();
   const email = loggedInUser[0]?.email;
-
-  const subscribed = loggedInUser[0]?.subscription;
 
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [hasLiked, setHasLiked] = useState(false);
