@@ -1,0 +1,155 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    background-color: #f4f4f9;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 1000px;
+    min-height: 90vh;
+    background: linear-gradient(60deg, #abb7c349, #e9ecef);
+    overflow-x: hidden;
+}
+
+.arrow-icon {
+    margin: 10px;
+    cursor: pointer;
+}
+
+.arrow-icon:hover {
+    color: var(--twitter-color);
+}
+
+.done-icon{
+    margin-right: 10px;
+    /* padding-top: 5px; */
+}
+
+.navbar {
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    width: 100%;
+    padding-top: 10px;
+}
+
+.text-color {
+    color: #333;
+}
+
+.card-grid {
+    display: flex;
+    gap: 1.25rem;
+    place-items: center;
+    width: 95%;
+    margin: 3rem auto 0;
+}
+
+span {
+    color: black;
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin: 1rem 0;
+}
+
+.small {
+    font-size: 1rem;
+}
+
+
+.subscribed-button {
+    background-color: #38a169;
+}
+
+.subscribe-button {
+    display: inline-block;
+    margin-top: 20px;
+    background-color: var(--twitter-color);
+    color: white;
+    border-radius: 0.5rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.plan {
+    background-color: white;
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 45%;
+    margin: 10px;
+    /* Add margin for spacing */
+    transition: transform 0.3s ease;
+}
+
+.plan:hover {
+    transform: translateY(-10px);
+}
+
+#bg1 {
+    background: rgba(109, 128, 156, 0.26);
+}
+
+#bg2 {
+    background: rgba(112, 217, 238, 0.26);
+}
+
+#bg3 {
+    background: rgba(165, 150, 62, 0.26);
+}
+
+.plan h2 {
+    margin-top: 0;
+    font-size: 1.8em;
+    color: #333;
+}
+
+.price {
+    font-size: 1.6em;
+    color: #1da1f2;
+    margin: 15px 0;
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.features li {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.subscribe-button {
+    display: inline-block;
+    background-color: var(--twitter-color);
+    color: white;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+.subscribe-button:hover {
+    background-color: #0d8de0;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .plan {
+        width: 90%;
+    }
+}
