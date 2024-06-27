@@ -9,6 +9,7 @@ import axios from "axios";
 import auth from "../../firebase.init";
 import { Modal, Box, TextField } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
+import LanguageIcon from "@mui/icons-material/Language";
 
 const languages = [
   { code: "en", name: "English" },
@@ -229,7 +230,7 @@ const LanguageSelector = () => {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        {t("Language")}
+        <LanguageIcon />
       </Button>
       <Menu
         id="basic-menu"

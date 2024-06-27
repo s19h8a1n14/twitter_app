@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import TwitterImage from "../../assets/images/twitter.jpeg";
-import TwitterIcon from "@mui/icons-material/Twitter";
+import TwitterImage from "../../assets/images/twitter.png";
+import XIcon from "@mui/icons-material/X";
 import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
@@ -9,11 +9,15 @@ import auth from "../../firebase.init";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Snackbar from "@mui/material/Snackbar";
 import "./Login.css";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
 
   const [signInWithEmailAndPassword, user, loading, error] =
@@ -23,7 +27,7 @@ const Login = () => {
     useSignInWithGoogle(auth);
 
   if (user || googleUser) {
-    navigate("/");
+    // navigate("/");
     console.log(user);
     console.log(googleUser);
   }
@@ -45,6 +49,7 @@ const Login = () => {
           }
         })
         .catch((err) => {
+          setOpen(true);
           console.error("Error logging in:", err);
           setErrorMessage(
             err.response ? err.response.data : "An error occurred"
@@ -59,6 +64,10 @@ const Login = () => {
   if (loading) {
     console.log("loading...");
   }
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,7 +85,7 @@ const Login = () => {
       </div>
       <div className="form-container">
         <div className="form-box">
-          <TwitterIcon className="Twittericon" style={{ color: "skyblue" }} />
+          <XIcon className="Twittericon" style={{ color: "black" }} />
           <h2 className="heading">Happening Now</h2>
           <h3 className="heaiding1">Join Twitter today</h3>
           <form onSubmit={handleSubmit}>
@@ -122,6 +131,13 @@ const Login = () => {
           </form>
         </div>
       </div>
+      <Snackbar
+        open={open}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="Mobile devices can only login between 9 am and 5pm"
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      />
     </div>
   );
 };

@@ -18,19 +18,39 @@ const Lists = () => {
       title: "Retweet Champion",
       description: "Awarded for receiving 2 or more retweets.",
     },
+    {
+      title: "Classic Liker",
+      description: "Awarded for receiving 4 or more likes.",
+    },
+    {
+      title: "Classic Retweeter",
+      description: "Awarded for receiving 4 or more retweeter.",
+    },
   ];
 
   if (likes >= 2) {
     receivedBadges.push({
       title: "Super Liker",
-      description: "Awarded for receiving 2 or more likes.",
+      description: "Keep Going.",
+    });
+  }
+  if (likes >= 4) {
+    receivedBadges.push({
+      title: "Classic Liker",
+      description: "Keep Going.",
     });
   }
 
   if (retweets >= 2) {
     receivedBadges.push({
       title: "Retweet Champion",
-      description: "Awarded for receiving 2 or more retweets.",
+      description: "Keep Going.",
+    });
+  }
+  if (retweets >= 2) {
+    receivedBadges.push({
+      title: "Classic Retweeter",
+      description: "Keep Going.",
     });
   }
 

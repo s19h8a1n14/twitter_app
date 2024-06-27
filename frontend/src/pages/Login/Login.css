@@ -1,3 +1,8 @@
+body {
+  /* background-color:black; */
+  /* color: white; */
+}
+
 .login-container {
   display: flex;
   flex: 1;
@@ -9,19 +14,31 @@
   flex: 1;
   padding: 50px;
   margin: 10px;
-  margin-left: -300px;
   align-content: center;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+hr {
+  width: 75%;
 }
 
 .form-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: left;
-  align-items: inherit;
   grid-row: auto;
 }
 
 .Twitter-img {
   color: skyblue;
   max-width: 50%;
+  height: 100%;
 }
 
 .input-form {
@@ -31,12 +48,12 @@
 .heading,
 h1 {
   font-size: 50px;
+  font-weight: 900;
 }
 
 .heading1,
 h3 {
   font-size: 35px;
-
   justify-content: end;
 }
 
@@ -46,8 +63,13 @@ h3 {
 }
 
 .image {
+  position: relative;
+  top: 25%;
+  left: 25%;
   max-width: 75%;
-  height: 100%;
+  height: auto;
+  /* -webkit-filter: invert(100%); */
+  filter: invert(100%);
   /* margin-left: -50px; */
 }
 
@@ -62,7 +84,7 @@ input {
 .email,
 .password {
   background-color: #e8f0fe;
-  width: 70%;
+  width: 100%;
   border-radius: 8px;
   padding: 14px;
   border: none;
@@ -71,7 +93,7 @@ input {
 
 .display-name {
   background-color: #e8f0fe;
-  width: 70%;
+  width: 100%;
   border-radius: 8px;
   padding: 14px;
   border: none;
@@ -80,11 +102,12 @@ input {
 
 .btn-login {
   padding: 7px;
+  width: 10rem;
 }
 
 .btn {
   background-color: rgb(92, 199, 241);
-  width: 75%;
+  width: 100%;
   margin-right: 20px;
   padding: 14px;
   border-radius: 8px;
@@ -97,10 +120,11 @@ input {
 
 .g-btn {
   border: 1px solid;
+  border-radius: 5rem !important;
   height: 40px !important;
   line-height: 40px !important;
   font-size: 15px !important;
-  width: 70% !important;
+  width: 100% !important;
   margin: 10px;
 }
 
@@ -150,6 +174,6 @@ input {
     order: 1;
     width: 100%;
     height: 100%;
-    margin-left: 100px;
+    left: 15%;
   }
 }

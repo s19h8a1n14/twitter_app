@@ -7,7 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import ListAltIcon from "@mui/icons-material/ListAlt";
+import LabelIcon from "@mui/icons-material/Label";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import MoreIcon from "@mui/icons-material/More";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -72,7 +72,7 @@ const Sidebar = ({ handleLogout, user }) => {
         <SidebarOptions Icon={BookmarkBorderIcon} text="Bookmarks" />
       </CustomeLink>
       <CustomeLink to="/home/lists">
-        <SidebarOptions Icon={ListAltIcon} text="Lists" />
+        <SidebarOptions Icon={LabelIcon} text="Badges" />
       </CustomeLink>
       <CustomeLink to="/home/profile">
         <SidebarOptions Icon={PermIdentityIcon} text="Profile" />

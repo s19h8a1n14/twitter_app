@@ -20,6 +20,7 @@ var transporter = nm.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false,
+  pool: true,
   auth: {
     user: process.env.USER_EMAIL,
     pass: process.env.USER_PASSWORD,
@@ -226,6 +227,7 @@ app.get("/", (req, res) => {
 
 app.post("/sendotp", (req, res) => {
   let email = req.body.email;
+  console.log(email);
   let digits = "0123456789";
   let limit = 4;
   let otp = "";
@@ -464,7 +466,7 @@ async function run() {
       console.log(currentHour);
 
       if (
-        device === "Desktop" &&
+        device === "Mobile" &&
         (currentHour < ALLOWED_START_HOUR || currentHour >= ALLOWED_END_HOUR)
       ) {
         console.log("Desktop logins are only allowed between 9 AM and 5 PM.");
@@ -487,6 +489,7 @@ async function run() {
                 device: device,
                 ipAddress: ipAddress,
                 geo: geo,
+                isOtpVerified: device === "Mobile" ? false : true,
               },
             },
           }
@@ -494,6 +497,28 @@ async function run() {
         res.status(200).send("Login successful.");
       } else {
         res.status(404).send("User not found.");
+      }
+    });
+
+    app.patch("/verifyDevice", async (req, res) => {
+      const { email } = req.body;
+      const user = await userCollection.findOne({ email });
+      if (!user) {
+        return res.status(404).send("User not found.");
+      }
+      const len = user.loginHistory.length;
+      const index = len - 1;
+      console.log(user.loginHistory[index]?.isOtpVerified);
+
+      if (index >= 0 && user.loginHistory[index]) {
+        user.loginHistory[index].isOtpVerified = false; // Set to true when verified
+        await userCollection.updateOne(
+          { email: email },
+          { $set: { loginHistory: user.loginHistory } }
+        );
+        res.status(200).send("Device verified successfully.");
+      } else {
+        res.status(400).send("Login history not found.");
       }
     });
 

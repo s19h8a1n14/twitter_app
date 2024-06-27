@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import TwitterImage from "../../assets/images/twitter.jpeg";
+import TwitterImage from "../../assets/images/twitter.png";
 import TwitterIcon from "@mui/icons-material/Twitter";
+import XIcon from "@mui/icons-material/X";
 import auth from "../../firebase.init";
 import {
   useCreateUserWithEmailAndPassword,
@@ -87,7 +88,7 @@ const Signup = () => {
       </div>
       <div className="form-container">
         <div className="form-box">
-          <TwitterIcon className="Twittericon" style={{ color: "skyblue" }} />
+          <XIcon className="Twittericon" style={{ color: "black" }} />
           <h2 className="heading">Happening Now</h2>
           <h3 className="heaiding1">Join Twitter today</h3>
           <form onSubmit={handleSubmit}>
