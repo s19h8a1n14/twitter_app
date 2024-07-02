@@ -31,7 +31,7 @@ const apikey = process.env.API_KEY;
 
 const stripe = require("stripe")(apikey);
 
-const endpointSecret = "whsec_zvljbIdJnnW3LusO35Z6Z34ten3hnrFl";
+const endpointSecret = process.env.ENDPOINT_SECRET;
 
 let session = "";
 
