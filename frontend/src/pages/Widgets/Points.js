@@ -52,7 +52,7 @@ const Points = ({ onClose }) => {
       <button onClick={onClose}>close</button> */}
       <div className="App">
         <header className="App-header">
-          <h1>Subscribe to Twitter Premium Through Points</h1>
+          <h1>{t("Subscribe to Twitter Premium Through Points")}</h1>
 
           <p>
             {t("Enjoy exclusive features and enhance your Twitter experience.")}
@@ -60,7 +60,7 @@ const Points = ({ onClose }) => {
           <div className="subscription-plans">
             <div className="plan">
               <h2>{t("Monthly Plan")}</h2>
-              <p className="price">4 points</p>
+              <p className="price">4 {t("Points")}</p>
               <ul className="features">
                 <li>{t("Blue tick")}</li>
                 <li>{t("Unlimited posts per day")}</li>
@@ -72,7 +72,7 @@ const Points = ({ onClose }) => {
                     {t("Subscribe Now")}
                   </Button>
                 ) : (
-                  <Button disabled>You do not have enough coins</Button>
+                  <Button disabled>{t("You do not have enough coins")}</Button>
                 )
               ) : plan === 1 ? (
                 <span className="subscribe-button">{t("Your Plan")}</span>
@@ -82,7 +82,7 @@ const Points = ({ onClose }) => {
             </div>
             <div className="plan">
               <h2>{t("Yearly Plan")}</h2>
-              <p className="price">8 Points</p>
+              <p className="price">8 {t("Points")}</p>
               <ul className="features">
                 <li>{t("Blue tick")}</li>
                 <li>{t("Unlimited posts per day")}</li>
@@ -94,7 +94,7 @@ const Points = ({ onClose }) => {
                     {t("Subscribe Now")}
                   </Button>
                 ) : (
-                  <Button disabled>You do not have enough coins</Button>
+                  <Button disabled>{t("You do not have enough coins")}</Button>
                 )
               ) : plan === 2 ? (
                 <span className="subscribe-button">{t("Your Plan")}</span>
@@ -104,7 +104,7 @@ const Points = ({ onClose }) => {
             </div>
           </div>
           <Button className="close-button" onClick={onClose}>
-            Close
+            {t("Close")}
           </Button>
         </header>
       </div>

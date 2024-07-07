@@ -28,7 +28,7 @@ function App({ onClose }) {
             </ul>
             {!subscribed ? (
               <a
-                href="https://buy.stripe.com/test_bIYcPY50A6web847su"
+                href="https://buy.stripe.com/test_bIYbLg4bkdwRenCeUW"
                 className="subscribe-button"
               >
                 {t("Subscribe Now")}
@@ -49,7 +49,7 @@ function App({ onClose }) {
             </ul>
             {!subscribed ? (
               <a
-                href="https://buy.stripe.com/test_cN2dU20Kkg6Oekg5kl"
+                href="https://buy.stripe.com/test_28o2aGbDM8cx1AQcMN"
                 className="subscribe-button"
               >
                 {t("Subscribe Now")}

@@ -33,6 +33,17 @@ const Login = () => {
   }
 
   useEffect(() => {
+    // fetch from router /time
+    axios.get("http://localhost:5000/time").then((res) => {
+      if (res.data === "Access granted") {
+      } else {
+        setOpen(true);
+        // console.log(res.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (user || googleUser) {
       const currentUser = user || googleUser.user;
       const userData = {
@@ -43,7 +54,7 @@ const Login = () => {
         .then((response) => {
           console.log(response);
           if (response.status === 200) {
-            navigate("/");
+            navigate("/home/feed");
           } else {
             console.error("Failed to login");
           }

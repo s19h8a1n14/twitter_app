@@ -31,7 +31,7 @@ const apikey = process.env.API_KEY;
 
 const stripe = require("stripe")(apikey);
 
-const endpointSecret = process.env.ENDPOINT_SECRET;
+const endpointSecret = "whsec_HDfVkAvpRqSA097gZITne5zJJWobEkU3";
 
 let session = "";
 
@@ -75,8 +75,9 @@ app.post(
         }
         let emailto = session.customer_details.email;
         pLink = session.payment_link;
+        let subscriptionNumber = 0;
 
-        if (pLink == "plink_1POOQsSIVZptqxDy4dCzwPUB") {
+        if (pLink == "plink_1PY8lfRvkH9eWe19azuwzVGv") {
           // monthly subscription
           subscriptionNumber = 1;
           await userCollection.updateOne(
@@ -88,7 +89,7 @@ app.post(
             { email: emailto },
             { $set: { subscriptionExpiry: Date.now() + 2592000000 } }
           );
-        } else if (pLink == "plink_1POOOoSIVZptqxDyoBhxbfrT") {
+        } else if (pLink == "plink_1PY8kXRvkH9eWe19j4uKhKEz") {
           // yearly subsscription
           subscriptionNumber = 2;
           await userCollection.updateOne(
@@ -112,100 +113,87 @@ app.post(
           <div class="container mt-6 mb-7">
             <div class="row justify-content-center">
               <div class="col-lg-12 col-xl-7">
-                <div class="card">
-                  <div class="card-body p-5">
-                    <h2>
-                      Hey ${session.customer_details.name},
-                    </h2>
+              <div class="card">
+                <div class="card-body p-5">
+                <h2>
+                  Hey ${session.customer_details.name},
+                </h2>
+                <p class="fs-sm">
+                  This is the receipt for a payment of <strong>${amountPaid}</strong> (Rupees) you made to Twitter Subscription.
+                </p>
+
+               
+
+                <div class="border-top border-gray-200 mt-4 py-4">
+                  <div class="row">
+                  <div class="col-md-6">
+                    <div class="text-muted mb-2">Client</div>
+                    <strong>
+                    ${session.customer_details.name}
+                    </strong>
                     <p class="fs-sm">
-                      This is the receipt for a payment of <strong>${amountPaid}</strong> (Rupee) you made to Twitter Subscription.
+                    <a href="#!" class="text-purple">${session.customer_details.email}
+                    </a>
                     </p>
-
-                    <div class="border-top border-gray-200 pt-4 mt-4">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="text-muted mb-2">Payment No.</div>
-                          <strong>#${session.subscription}</strong>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                          <div class="text-muted mb-2">Payment Date</div>
-                          <strong>${Date.now}</strong>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="border-top border-gray-200 mt-4 py-4">
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="text-muted mb-2">Client</div>
-                          <strong>
-                            ${session.customer_details.name}
-                          </strong>
-                          <p class="fs-sm">
-                            
-                            <br>
-                            <a href="#!" class="text-purple">${session.customer_details.email}
-                            </a>
-                          </p>
-                        </div>
-                        <div class="col-md-6 text-md-end">
-                          <div class="text-muted mb-2">Payment To</div>
-                          <strong>
-                            Twitter ${subscriptionType} Subscription
-                          </strong>
-                          <p class="fs-sm">
-                            NIT Durgapur
-                            <br>
-                            <a href="#!" class="text-purple">balajikurakula8@gmail.com
-                            </a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <table class="table border-bottom border-gray-200 mt-3">
-                      <thead>
-                        <tr>
-                          <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm px-0">Description</th>
-                          <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td class="px-0">${subscriptionType} Subscription</td>
-                          <td class="text-end px-0">${amountPaid}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-
-                    <div class="mt-5">
-                      <div class="d-flex justify-content-end">
-                        <p class="text-muted me-3">Subtotal:</p>
-                        <span>${amountPaid}</span>
-                      </div>
-                      <div class="d-flex justify-content-end">
-                        
-                      </div>
-                      <div class="d-flex justify-content-end mt-3">
-                        <h5 class="me-3">Total:</h5>
-                        <h5 class="text-success">${amountPaid}</h5>
-                      </div>
-                    </div>
                   </div>
-                  <a href="#!" class="btn btn-dark btn-lg card-footer-btn justify-content-center text-uppercase-bold-sm hover-lift-light">
-                    <span class="svg-icon text-white me-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-g</title><path d="M336,208V113a80,80,0,0,0-160,0v95" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><rect x="96" y="208" width="320" height="272" rx="48" ry="48" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></rect></svg>
-                    </span>
-                    Payment Status : ${session.payment_status}
-                  </a>
+                  <div class="col-md-6 text-md-end">
+                    <div class="text-muted mb-2">Payment for</div>
+                    <strong>
+                    Twitter ${subscriptionType} Subscription
+                    </strong>
+                    <p class="fs-sm">
+                    NIT Durgapur
+                    <br>
+                    <a href="#!" class="text-purple">balajikurakula8@gmail.com
+                    </a>
+                    </p>
+                  </div>
+                  </div>
                 </div>
+
+                <table class="table border-bottom border-gray-200 mt-3">
+                  <thead>
+                  <tr>
+                    <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm px-0">Subscription</th>
+                    <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Amount</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td class="px-0">${subscriptionType} Subscription</td>
+                    <td class="text-end px-0">${amountPaid}</td>
+                  </tr>
+                  </tbody>
+                </table>
+
+                <div class="mt-5">
+                  <div class="d-flex justify-content-end">
+                  <p class="text-muted me-3">Subtotal:</p>
+                  <span>${amountPaid}</span>
+                  </div>
+                  <div class="d-flex justify-content-end">
+
+                  </div>
+                  <div class="d-flex justify-content-end mt-3">
+                  <h5 class="me-3">Total:</h5>
+                  <h5 class="text-success">${amountPaid}</h5>
+                  </div>
+                </div>
+                </div>
+                <a href="#!" class="btn btn-dark btn-lg card-footer-btn justify-content-center text-uppercase-bold-sm hover-lift-light">
+                <span class="svg-icon text-white me-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><title>ionicons-v5-g</title><path d="M336,208V113a80,80,0,0,0-160,0v95" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></path><rect x="96" y="208" width="320" height="272" rx="48" ry="48" style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"></rect></svg>
+                </span>
+                Payment Status : ${session.payment_status}
+                </a>
+              </div>
               </div>
             </div>
-          </div>
+            </div>
           `,
         });
 
-        console.log("Message sent: %s", info.messageId);
+        //console.log("Message sent: %s", info.messageId);
 
         break;
       // ... handle other event types
@@ -361,10 +349,15 @@ async function run() {
       try {
         const post = req.body;
 
+        //console.log(post);
+
         const user = await userCollection.findOne({ email: post.email });
+
         if (!user) {
           return res.status(400).json({ error: "User not found" });
         }
+
+        const userId = String(user._id);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -379,6 +372,13 @@ async function run() {
         const canPost = user.subscription || postCount < dailyLimit;
 
         if (canPost) {
+          // Check if video URL exists and add upvote
+          if (post.video) {
+            post.upvotes = [userId];
+          } else {
+            post.upvotes = [];
+          }
+
           const result = await postCollection.insertOne({
             ...post,
             createdAt: new Date(),
@@ -390,6 +390,7 @@ async function run() {
             { email: post.email },
             { $set: { points } }
           );
+
           res.send(result);
         } else {
           res.status(400).json({ error: "Daily post limit reached" });
@@ -438,6 +439,29 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/time", async (req, res) => {
+      // get device type
+      const currentHour = new Date().getHours();
+      const userAgent = req.useragent;
+      const device = userAgent.isMobile
+        ? "Mobile"
+        : userAgent.isDesktop
+        ? "Desktop"
+        : "Unknown";
+      if (device === "Mobile") {
+        if (
+          currentHour >= ALLOWED_START_HOUR &&
+          currentHour <= ALLOWED_END_HOUR
+        ) {
+          res.send("Access granted");
+        } else {
+          res.send("Access denied");
+        }
+      } else {
+        res.send("Access granted");
+      }
+    });
+
     app.post("/login", async (req, res) => {
       const { email } = req.body;
 
@@ -457,13 +481,15 @@ async function run() {
         ? "Desktop"
         : "Unknown";
 
+      //console.log(device);
+
       // Capture IP address
       const ipAddress =
         req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
       const currentHour = new Date().getHours();
 
-      console.log(currentHour);
+      //console.log(currentHour);
 
       if (
         device === "Mobile" &&
@@ -508,7 +534,7 @@ async function run() {
       }
       const len = user.loginHistory.length;
       const index = len - 1;
-      console.log(user.loginHistory[index]?.isOtpVerified);
+      //console.log(user.loginHistory[index]?.isOtpVerified);
 
       if (index >= 0 && user.loginHistory[index]) {
         user.loginHistory[index].isOtpVerified = false; // Set to true when verified
@@ -761,7 +787,7 @@ async function run() {
       try {
         const { id } = req.params;
         const email = req.query.email;
-        console.log(email);
+        //console.log(email);
         const post = await postCollection.findOne({
           _id: new mongoose.Types.ObjectId(id),
         });

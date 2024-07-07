@@ -36,6 +36,7 @@ const Post = ({ p }) => {
   const [hasBookmarked, setHasBookmarked] = useState(false);
   const [userId, setUserId] = useState("");
   const navigate = useNavigate();
+  const subscription = loggedInUser[0]?.subscription;
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -202,6 +203,24 @@ const Post = ({ p }) => {
     return <FavoriteBorderIcon fontSize="small" style={{ color: "grey" }} />;
   };
 
+  const Upvotes = () => {
+    if (p?.upvotes?.length > 0) {
+      return p?.upvotes.find((like) => like === userId) ? (
+        <>
+          <ThumbUpIcon fontSize="small" style={{ color: "orange" }} />
+          &nbsp;{p?.upvotes?.length}
+        </>
+      ) : (
+        <>
+          <ThumbUpIcon fontSize="small" style={{ color: "grey" }} />
+          &nbsp;{p?.upvotes?.length}
+        </>
+      );
+    }
+
+    return <ThumbUpIcon fontSize="small" style={{ color: "grey" }} />;
+  };
+
   return (
     <div className="post">
       <div className="post_avatar">
@@ -213,7 +232,7 @@ const Post = ({ p }) => {
             <h3>
               {name}{" "}
               <span className="post_headerSpecial">
-                {subscribed && <VerifiedIcon className="post_badge" />} @
+                {subscription && <VerifiedIcon className="post_badge" />} @
                 {username}
               </span>
             </h3>
@@ -234,7 +253,7 @@ const Post = ({ p }) => {
             style={{
               position: "relative",
               maxWidth: "100%",
-              maxHeight: "300px", // Ensure the video does not take the entire screen
+              maxHeight: "200px", // Ensure the video does not take the entire screen
               width: "100%",
               justifyContent: "center",
             }}
@@ -261,14 +280,18 @@ const Post = ({ p }) => {
             <Bookmarks />
           </Button>
 
-          <div className="post_footerItem">
+          <Button onClick={(e) => handleUpvote(e)}>
+            <Upvotes />
+          </Button>
+
+          {/* <div className="post_footerItem">
             <ThumbUpIcon
               fontSize="small"
               style={{ color: hasUpvoted ? "grey" : "blue" }}
               onClick={(e) => handleUpvote(e)}
             />
             <span>{p?.upvotes?.length}</span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

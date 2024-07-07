@@ -5,11 +5,13 @@ import { Modal } from "@mui/material";
 import Subscriptions from "../Subscriptions/Subscriptions";
 import Subscribe from "./Subscribe";
 import Points from "./Points";
+import { useTranslation } from "react-i18next";
 
 const SubscriptionBox = () => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [openPointModal, setOpenPointModal] = useState(false);
+  const { t } = useTranslation();
   const handleSubscribe = () => {
     // navigate("/home/subscribe");
     setOpenModal(true);
@@ -49,17 +51,18 @@ const SubscriptionBox = () => {
 
   return (
     <div className="subscription-box">
-      <h3 className="subscription-title">Subscribe to Premium</h3>
+      <h3 className="subscription-title">{t("Subscribe to Premium")}</h3>
       <p className="subscription-text">
-        Subscribe to unlock new features and if eligible, receive a share of ads
-        revenue.
+        {t(
+          "Subscribe to unlock new features and if eligible, receive a share of ads revenue."
+        )}
       </p>
       <div className="button">
         <button className="subscribe-buttons" onClick={handleSubscribe}>
-          Subscribe
+          {t("Subscribe")}
         </button>
         <button className="subscribe-buttons" onClick={handlePoints}>
-          points
+          {t("Points")}
         </button>
       </div>
       {subscribeModal}

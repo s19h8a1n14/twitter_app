@@ -127,6 +127,24 @@ const Home = () => {
     marginRight: "8px", // Add right margin between text fields
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // fetch from router /time
+      axios.get("http://localhost:5000/time").then((res) => {
+        if (res.data === "Access granted") {
+          // do something
+        } else {
+          // logout the user and redirect
+          signOut(auth).then(() => {
+            window.location.href = "/login";
+          });
+        }
+      });
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const otpModal = (
     <Modal
       open={openModal}
@@ -203,6 +221,7 @@ const Home = () => {
       <Button variant="contained" color="primary" onClick={requestOTP}>
         Verify OTP
       </Button>
+      <Button onClick={handleLogout}>Logout</Button>
       {otpModal}
     </div>
   );

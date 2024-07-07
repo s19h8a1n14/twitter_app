@@ -5,10 +5,12 @@ import Post from "../Feed/Post/Post";
 import { TextField } from "@mui/material";
 import "../Page.css";
 import "./Bookmarks.css";
+import { useTranslation } from "react-i18next";
 
 const Bookmarks = () => {
   const [posts, setPosts] = useState([]);
   const [user] = useAuthState(auth);
+  const { t } = useTranslation();
   useEffect(() => {
     fetch(`http://localhost:5000/userBookmarks?email=${user?.email}`)
       .then((res) => res.json())
@@ -21,7 +23,7 @@ const Bookmarks = () => {
     <div>
       <div className="feed">
         <div>
-          <h1>Bookmarks</h1>
+          <h1>{t("Bookmarks")}</h1>
         </div>
         <div>
           {posts.map((p) => (

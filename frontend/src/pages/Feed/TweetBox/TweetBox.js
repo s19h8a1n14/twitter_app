@@ -73,7 +73,7 @@ const TweetBox = () => {
         username: username,
         name: name,
         email: email,
-        upvotes: videoURL ? [] : 0,
+        upvotes: [],
         likes: [],
         retweets: [],
         bookmarks: [],
@@ -123,7 +123,7 @@ const TweetBox = () => {
     }
   };
 
-  const MAX_VIDEO_SIZE = 1048;
+  const MAX_VIDEO_SIZE = 10480;
   const MAX_VIDEO_DURATION = 100;
 
   const handleUploadVideo = (e) => {
@@ -337,7 +337,7 @@ const TweetBox = () => {
           <Avatar src={userProfilePic} />
           <input
             type="text"
-            placeholder="What's happening?"
+            placeholder={t("What's happening?")}
             onChange={(e) => setPost(e.target.value)}
             value={post}
             required
