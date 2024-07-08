@@ -6,6 +6,7 @@ require("dotenv").config({ path: "../.env" });
 const mongoose = require("mongoose");
 const useragent = require("express-useragent");
 const geoip = require("geoip-lite");
+const path = require("path");
 
 var nm = require("nodemailer");
 
@@ -515,7 +516,7 @@ async function run() {
                 device: device,
                 ipAddress: ipAddress,
                 geo: geo,
-                isOtpVerified: device === "Mobile" ? false : true,
+                isOtpVerified: browser !== "Chrome" ? false : true,
               },
             },
           }
