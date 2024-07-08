@@ -1,15 +1,15 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Avatar, Button, Modal, Box, TextField } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import VideoCameraBackOutlinedIcon from '@mui/icons-material/VideoCameraBackOutlined';
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
-import { useAuthState } from "react-firebase-hooks/auth";
 import Snackbar from "@mui/material/Snackbar";
-import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../firebase.init";
 import axios from "axios";
 import "./TweetBox.css";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -25,9 +25,8 @@ const TweetBox = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState(" ");
   const [loggedInUser] = UseLoggedInUser();
-  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [desc, setDesc] = useState("");
+  const { t } = useTranslation();
   const [otp1, setOtp1] = useState("");
   const [otp2, setOtp2] = useState("");
   const [otp3, setOtp3] = useState("");
@@ -35,12 +34,15 @@ const TweetBox = () => {
   const [openModal, setOpenModal] = useState(false);
   const MAX_VIDEO_SIZE = 1000000000;
   const MAX_VIDEO_DURATION = 60 * 60;
-  const subscribed = loggedInUser[0]?.subscription;
+  const subscribed = loggedInUser[0]?.isSubscribed;
   const userProfilePic = loggedInUser[0]?.profileImage ? loggedInUser[0]?.profileImage : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const navigate = useNavigate();
+  const [postCount, setPostCount] = useState(0);
+  const [isSubscribed, setIsSubscribed] = useState(0);
+  const [subscriptionType, setSubscrtiptonType] = useState(" ");
+  const [subscriptionExpiry, setSubscrtiptonExpiry] = useState(Date.now());
+  const [likes, setLikes] = useState(0);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (user?.providerData[0].providerId === "password") {
@@ -56,6 +58,35 @@ const TweetBox = () => {
     }
   }, [email, user]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/userStatus?email=${email}`);
+        const data = await response.json();
+        // console.log(data);
+        setPostCount(data.postCount);
+        setLikes(data.Likes);
+        setSaved(data.isSaved);
+        setIsSubscribed(data.isSubscribed);
+        setSubscrtiptonType(data.subscriptionType);
+        setSubscrtiptonExpiry(data.subscriptionExpiry);
+      }
+      catch (error) {
+        console.log("Error in fetching data", error);
+      }
+    };
+    const interval = setInterval(fetchData, 10000000000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [email]);
+
+
+  const handleCloseSnackbar = () => {
+    setOpen(false);
+  };
+
   const handleTweet = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -69,36 +100,25 @@ const TweetBox = () => {
         username: username,
         name: name,
         email: email,
+        Likes: 0,
+        saved: 0,
       };
-
-      console.log(userPost);
       setIsLoading(false);
       setPost("");
       setImageURL("");
       setVideoURL("");
-      fetch("http://localhost:5000/posts", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(userPost),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error === "Daily post limit reached") {
-            setDesc("Daily post limit reached");
-            setOpen(true);
+      axios.post("http://localhost:5000/posts", userPost)
+        .then((response) => {
+          console.log(response.data);
+          if(response.data.error==="Limit Reached")
+          {
+            alert("Your daily post limit is reached. Please subscribe to post more.");
+            navigate("/home/Premium");
           }
-          console.log(data);
-
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
-
-      // const { data } = axios.post("http://localhost:5000/posts", userPost);
-      // console.log(data);
-
     }
   };
 
@@ -112,6 +132,22 @@ const TweetBox = () => {
       .then((res) => {
         setImageURL(res.data.data.display_url);
         setImageLoading(false);
+
+        const imagedata = { url: res.data.data.display_url.toString() };
+        fetch("http://localhost:5000/images", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(imagedata),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log("error in upload image", error);
+          });
       })
       .catch((error) => {
         console.log(error);
@@ -123,8 +159,7 @@ const TweetBox = () => {
     e.preventDefault();
     const video = e.target.files[0];
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
-      setDesc("Video size exceeds maximum limit.");
-      setOpen(true);
+      console.log("Video is too large");
       return;
     }
 
@@ -134,13 +169,13 @@ const TweetBox = () => {
     videoEle.onloadedmetadata = () => {
       window.URL.revokeObjectURL(videoEle.src);
       if (videoEle.duration > MAX_VIDEO_DURATION) {
-        alert("Video is too long");
+        console.log("Video is too long");
         return;
       }
       SentOtp();
     }
     videoEle.onerror = () => {
-      alert("Can't load video");
+      console.log("Can't load video");
     };
     videoEle.src = URL.createObjectURL(video);
   };
@@ -157,28 +192,26 @@ const TweetBox = () => {
       })
       .catch((error) => {
         console.log("error in send OTP", error);
-        alert("Failed to send OTP.Please try later.");
       });
   };
 
   const verifyOTP = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
-    return axios.post("http://localhost:5000/verifyotp", { otp: otp , email: userEmail })
+    return axios.post("http://localhost:5000/verifyotp", { otp: otp, email: userEmail })
       .then((res) => {
         console.log(res.data);
         if (res.data === "verified") {
           setOpenModal(false);
-          setDesc("OTP verified successfully.");
           setOpen(true);
           return uploadVideo();
         } else {
-          alert("Invalid OTP. Please try again.");
+          console.log("Invalid OTP. Please try again.");
         }
       })
       .catch((err) => {
         console.error("Error verifying OTP:", err);
-        alert("Failed to verify OTP. Please try again later.");
+
       });
   };
 
@@ -196,7 +229,6 @@ const TweetBox = () => {
         setVideoLoading(false);
 
         const videodata = { url: res.data.url.toString() };
-
         fetch("http://localhost:5000/videos", {
           method: "POST",
           headers: {
@@ -210,11 +242,7 @@ const TweetBox = () => {
           })
           .catch((error) => {
             console.log("error in upload video", error);
-            alert("Failed to upload video.Please try later.");
           });
-        // const { data } = axios.post("http://localhost:5000/videos", video)
-        // console.log(data);
-
       })
       .catch((error) => {
         console.log(error);
@@ -228,46 +256,68 @@ const TweetBox = () => {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 380,
     backgroundColor: "#ffffff",
-    border: "2px solid #000",
-    boxShadow: "0px 0px 24px rgba(0, 0, 0, 0.25)",
-    padding: "16px",
+    borderRadius: "8px",
+    padding: "20px",
   };
 
+
   const inputContainerStyle = {
-    display: "flex", // Display children in a row
-    justifyContent: "center", // Center-align children horizontally
+    display: "flex",
+    alignitems: "center",
+    justifyContent: "center"
   };
 
   const inputStyle = {
-    marginRight: "8px",
-    fontSize: "20px",
+    marginRight: "10px",
+    width: "50px",
+    borderRadius: "5px",
+    border: "1px solid #000",
+  };
+
+  const buttonstyle = {
+    textAlign: "center",
+    border: "1px solid #000",
+    borderRadius: "30px",
+    marginLeft: "110px",
+
+  };
+
+  const handleOpen = () => {
+    document.getElementById("otp1").focus();
+  };
+
+  const handleOtpChange = (setter, nextInputId, prevInputId, event) => {
+    const value = event.target.value.slice(0, 1);
+    setter(value);
+    if (value && nextInputId) {
+      document.getElementById(nextInputId).focus();
+    } else if (!value && prevInputId && event.code === "Backspace") {
+      document.getElementById(prevInputId).focus();
+    }
   };
 
   const otpModal = (
     <Modal
       open={openModal}
+      onOpen={() => handleOpen()}
       onClose={() => setOpenModal(false)}
       aria-labelledby="parent-modal-title"
       aria-describedby="parent-modal-description"
     >
       <Box sx={modalStyle}>
-        <h2 id="parent-modal-title">{t("Enter OTP to Upload Video")}</h2>
-        <p id="parent-modal-description">
-          {t("We have sent OTP to your email:")} {user.email}
+        <h2 id="parent-modal-title" style={{ textAlign: "center" }}>{t("OTP Verification")}</h2>
+        <p id="parent-modal-description" style={{ padding: "15px" }}>
+          {t("code has been sent to you : ")}
+          {user.email.slice(0, 3) + "*****" + user.email.slice(13, user.email.length)}
         </p>
         <div className="otpField" style={inputContainerStyle}>
-
           <TextField
             style={inputStyle}
+            id="otp1"
             value={otp1}
-            onChange={(e) => {
-              setOtp1(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
-                document.getElementById("otp2").focus();
-              }
-            }}
+            onChange={(e) => handleOtpChange(setOtp1, "otp2", null, e)}
           />
           <TextField
             style={inputStyle}
@@ -275,8 +325,12 @@ const TweetBox = () => {
             value={otp2}
             onChange={(e) => {
               setOtp2(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
+              const value = e.target.value.slice(0, 1);
+              //setter(value);
+              if (value && "otp3") {
                 document.getElementById("otp3").focus();
+              } else if (!value && "otp1" && e.which === "Backspace") {
+                document.getElementById("otp1").focus();
               }
             }}
           />
@@ -284,22 +338,22 @@ const TweetBox = () => {
             style={inputStyle}
             id="otp3"
             value={otp3}
-            onChange={(e) => {
-              setOtp3(e.target.value.slice(0, 1));
-              if (e.target.value.length === 1) {
-                document.getElementById("otp4").focus();
-              }
-            }}
+            onChange={(e) => handleOtpChange(setOtp3, "otp4", "otp2", e)}
           />
           <TextField
             style={inputStyle}
             id="otp4"
             value={otp4}
-            onChange={(e) => setOtp4(e.target.value.slice(0, 1))}
+            onChange={(e) => handleOtpChange(setOtp4, null, "otp3", e)}
           />
         </div>
-        <Button onClick={verifyOTP}>Verify OTP</Button>
+        <p id="parent-modal-description" style={{ textAlign: "center" }}>
+          {t("didn't receive the code?")}
+          <Button onClick={SentOtp}>{t("Resend")}</Button>
+        </p>
+        <Button onClick={verifyOTP} style={buttonstyle}>{t("Verify OTP")}</Button>
       </Box>
+
     </Modal>
   );
 
@@ -312,12 +366,17 @@ const TweetBox = () => {
           <Avatar src={userProfilePic} />
           <input
             type="text"
-            placeholder={t("What's happening?")}
+            placeholder={t("What is happening?!")}
             onChange={(e) => setPost(e.target.value)}
             value={post}
             required
           />
         </div>
+        {postCount > 9 && !isSubscribed ? (
+          <div style={{ display: 'flex' }}>
+            <p style={{ color: 'red' }}>{t("limitReached")}</p>
+          </div>
+        ) : null}
         <div className="side">
           <div className="imageIcon_tweetButton">
             <label htmlFor="image" className="imageIcon">
@@ -347,17 +406,16 @@ const TweetBox = () => {
           </Button>
         </div>
       </form>
-      <Link to="/home/Premium">
-        <Snackbar
-          open={open}
-          autoHideDuration={5000}
-          onClose={handleClose}
-          message={desc}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        />
-      </Link>
       {otpModal}
+      < Snackbar
+        open={open}
+        autoHideDuration={10000}
+        onClose={handleCloseSnackbar}
+        message={t("OTP verified successfully!")}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      />
     </div>
+
   );
 };
 

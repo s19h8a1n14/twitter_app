@@ -18,11 +18,117 @@
   border-radius: 20px;
 }
 
+#comment::after {
+  position: absolute;
+  display: flex;
+  content: "comment";
+  visibility: hidden;
+  background-color: #333; 
+  color: white; 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#comment:hover::after {
+  visibility: visible;
+  content: "comment";
+}
+
+
+#repost::after {
+  position: absolute;
+  display: flex;
+  content: "repost";
+  visibility: hidden;
+  background-color: #333; 
+  color: white; 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#repost:hover::after {
+  visibility: visible;
+  content: "repost";
+}
+ 
+#like::after {
+  position: absolute;
+  display: flex;
+  content: "like";
+  visibility: hidden;
+  background-color: #333; 
+  color: white; 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#like:hover::after {
+  visibility: visible;
+  content: "like";
+}
+
+#unlike::after {
+  position: absolute;
+  display: flex;
+  content: "unlike";
+  visibility: hidden;
+  background-color: #333; 
+  color:#f5a3c9; 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#unlike:hover::after {
+  visibility: visible;
+  content: "unlike";
+}
+ 
+#save::after {
+  position: absolute;
+  display: flex;
+  content: "save";
+  visibility: hidden;
+  background-color: #333; 
+  color: white; 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#save:hover::after {
+  visibility: visible;
+  content: "save";
+}
+
+ 
+#saved::after {
+  position: absolute;
+  display: flex;
+  content: "saved";
+  visibility: hidden;
+  background-color: #333; 
+  color: rgb(87, 227, 117); 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#saved:hover::after {
+  visibility: visible;
+  content: "saved";
+}
+
+
 .post_footer {
   display: flex;
   justify-content: space-between;
   padding: 0 10px;
-  margin-top: 10px;
+  margin-top: 30px;
+  margin-right: 10px;
 }
 
 .post__footer__icon:hover {
@@ -36,7 +142,7 @@
 }
 
 .post_headerText > h3 {
-  font-size: 15px;
+  font-size: 18px;
   margin-bottom: 5px;
 }
 
@@ -45,25 +151,25 @@
   color: var(--twitter-color);
 }
 
-.post_badge_1 {
+.post_badge_Basic {
   font-size: 14px !important;
   color: black;
 }
 
-.post_badge_2 {
+.post_badge_Premium {
   font-size: 14px !important;
   color: var(--twitter-color);
 }
 
-.post_badge_3 {
+.post_badge_PremiumPlus {
   font-size: 14px !important;
   color: gold;
 }
 
 .post_headerSpecial {
   font-weight: 600;
-  font-size: 12px;
-  color: gray;
+  font-size: 16px;
+  color: rgb(58, 55, 55);
 }
 
 .post_avatar {

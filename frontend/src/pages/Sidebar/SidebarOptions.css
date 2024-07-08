@@ -5,9 +5,10 @@
   cursor: pointer;
 }
 .sidebarOptions:hover {
-  background-color: #e8f5fe;
-  width: auto;
-  max-width: 200px;
+  background-color: #cfe4f4;
+  /* width: auto; */
+  width: 200px;
+  height: 45px;
   border-radius: 30px;
   color: var(--twitter-color);
   transition: color 100ms ease-out;

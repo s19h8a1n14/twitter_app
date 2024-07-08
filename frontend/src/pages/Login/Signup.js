@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import TwitterImage from "../../assets/images/twitter.jpeg";
 import TwitterIcon from "@mui/icons-material/Twitter";
-import {auth} from "../../firebase.init";
 import { useCreateUserWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
+import { auth, db, ref, set } from "../../firebase.init";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,19 +13,15 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
   const [name, setName] = useState("");
-  // const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-
-  const [createUserWithEmailAndPassword, user, loading, error] =
-    useCreateUserWithEmailAndPassword(auth);
-
-  const [signInWithGoogle, googleUser] =
-    useSignInWithGoogle(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] =  useCreateUserWithEmailAndPassword(auth);
+  const [signInWithGoogle, googleUser] =  useSignInWithGoogle(auth);
 
   if (user || googleUser) {
-    navigate("/");
-    console.log(user);
-    console.log(googleUser);
+    navigate("/login");
+    console.log(googleUser.user.displayName);
+    console.log(googleUser.user.email);
+    console.log(googleUser.user.uid);
   }
   if (error) {
     console.log(error.message);
@@ -36,22 +32,62 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
     createUserWithEmailAndPassword(email, password);
 
-    const user = {
-      userName: userName,
-      name: name,
-      email: email,
+    const userdata = {
+      userName: userName || googleUser.user.displayName,
+      name: name || googleUser.user.displayName,
+      email: email || googleUser.user.email,
+      password: password || googleUser.user.uid,
     };
-
-    
-    const { data } = axios.post("http://localhost:5000/register", user);
+    const { data } = axios.post("http://localhost:5000/register", userdata);
     console.log(data);
   };
 
-  const handleGoogleSignIn = () => {
-    signInWithGoogle();
+  // const handleGoogleSignIn = async () => {
+  //   try {
+  //     // await signInWithGoogle();
+  //     const response = await signInWithGoogle();
+  //     console.log(response);
+  //     const uid = response.user.uid;
+  //     const email = response.user.email;
+  //     const displayName = response.user.displayName;
+  //     console.log(uid);
+  //     const userRef = ref(db, 'users/' + uid);
+  //     await set(userRef, {
+  //       uid: uid,
+  //       email: email,
+  //       displayName: displayName
+  //     });
+  //   } catch (error) {
+  //     console.error("Error signing in with Google", error);
+  //   }
+  // };
+   
+  const handleGoogleSignIn = async () => {
+    try {
+      const response= await signInWithGoogle();
+      console.log(response);
+      const userData = {
+        userName:response.user.displayName,
+        name: response.user.displayName,
+        email:response.user.email,
+        password: response.user.uid,
+      };
+      const uid = response.user.uid;
+      const Email = response.user.email;
+      const displayName = response.user.displayName;
+      const userRef = ref(db, 'users/' + uid);
+          await set(userRef, {
+            uid: uid,
+        email: Email,
+        displayName: displayName
+          });
+      const { data } = await axios.post("http://localhost:5000/register", userData);
+      console.log(data);
+    } catch (error) {
+      console.error("Error signing in with Google", error);
+    }
   };
 
   return (
@@ -121,6 +157,6 @@ const Signup = () => {
       </div>
     </div>
   );
-};
 
+};
 export default Signup;

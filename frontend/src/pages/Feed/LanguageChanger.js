@@ -3,20 +3,60 @@ import { useTranslation } from "react-i18next";
 import { useAuthState } from "react-firebase-hooks/auth";
 import axios from "axios";
 import { auth } from "../../firebase.init";
-import { Button,Menu,MenuItem,Divider, Modal, Box, TextField } from "@mui/material";
+import { Button, Menu, createTheme, ThemeProvider, MenuItem, Modal, Box, TextField } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+// import { makeStyles } from '@material-ui/core/styles';
 import LanguageIcon from '@mui/icons-material/Language';
 import Snackbar from "@mui/material/Snackbar";
+import "./Feed.css";
 
 
 const languages = [
-    { code: "en", name: "English" },
-    { code: "hi", name: "Hindi" },
-    { code: "te", name: "Telugu" },
     { code: "be", name: "Bengali" },
-    { code: "sp", name: "Spanish" },
+    { code: "en", name: "English" },
     { code: "fr", name: "French" },
+    { code: "hi", name: "Hindi" },
     { code: "po", name: "Portuguese" },
+    { code: "sp", name: "Spanish" },
+    { code: "ta", name: "Tamil" },
+    { code: "te", name: "Telugu" }
 ];
+
+
+const customTheme = createTheme({
+    palette: {
+        background: {
+            paper: '#f5f5f5', // Set custom menu background color (optional)
+        },
+        action: {
+            hover: '#e0e0e0', // Set custom hover background color (optional)
+        },
+    },
+});
+
+// const useStyles = makeStyles((theme) => ({
+//     button: {
+//       '&:hover': {
+//         backgroundColor: theme.palette.action.hover, // Change background on hover
+//         '& .MuiButton-endIcon': { // Target the LanguageIcon within the button
+//           borderRadius: '50%', // Make icon circular on hover
+//         },
+//       },
+//       '& .MuiButton-endIcon': { // Target the LanguageIcon within the button
+//         color: 'inherit', // Inherit button color for normal state
+//         transition: 'color 0.3s ease-in-out', // Add smooth color transition
+//       },
+//       '&.Mui-focusVisible': { // Optional: Style for keyboard focus
+//         outline: 'none', // Remove default outline on focus
+//       },
+//     },
+//     clicked: { // Optional: Style for clicked state (if needed)
+//       backgroundColor: '#90EE90', // Light green background on click (replace with desired color)
+//     },
+//   }));
+
+
+
 
 const LanguageChanger = () => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -29,10 +69,13 @@ const LanguageChanger = () => {
     const [otp4, setOtp4] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [code, setCode] = useState("");
+    // const classes = useStyles();
     const [open, setOpen] = useState(false);
     const { t } = useTranslation();
     const { i18n } = useTranslation();
-  
+
+
+
 
     useEffect(() => {
         const storedLanguage = localStorage.getItem("selectedLanguage");
@@ -46,21 +89,16 @@ const LanguageChanger = () => {
         }
     }, [i18n]);
 
-    useEffect(() => {
-        document.body.dir = i18n.dir();
-    }, [i18n, i18n.language]);
 
 
     const handleCloseSnackbar = () => {
         setOpen(false);
     };
 
-    const handleClick = (e) => {
-        setAnchorEl(e.currentTarget);
-    };
 
     const handleClose = () => {
         setAnchorEl(null);
+        setIsClicked(!isClicked);
     };
 
 
@@ -77,12 +115,11 @@ const LanguageChanger = () => {
                     setOpen(true);
                     localStorage.setItem("selectedLanguage", code);
                 } else {
-                    alert("Invalid OTP. Please try again.");
+                    console.log("Invalid OTP. Please try again.");
                 }
             })
             .catch((err) => {
                 console.error("Error verifying OTP:", err);
-                alert("Failed to verify OTP. Please try again later.");
             });
     };
     const requestOTP = () => {
@@ -98,26 +135,11 @@ const LanguageChanger = () => {
             })
             .catch((error) => {
                 console.log("error in send OTP", error);
-                alert("Failed to send OTP.Please try later.");
             });
     };
 
     const changeLanguages = (code) => {
         setCode(code);
-        // const userEmail = email;
-        // setOtp1("");
-        // setOtp2("");
-        // setOtp3("");
-        // setOtp4("");
-        // axios.post("http://localhost:5000/sendotp", { email: userEmail })
-        //     .then((response) => {
-        //         console.log(response.data);
-        //         setOpenModal(true);
-        //     })
-        //     .catch((error) => {
-        //         console.log("error in send OTP", error);
-        //         alert("Failed to send OTP.Please try later.");
-        //     });
         requestOTP();
     };
 
@@ -129,7 +151,7 @@ const LanguageChanger = () => {
         width: 400,
         backgroundColor: "#ffffff",
         borderRadius: "8px",
-        border: "1px solid #000",
+        // border: "1px solid #000",
         boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.25)",
         padding: "20px",
     };
@@ -144,13 +166,15 @@ const LanguageChanger = () => {
         marginRight: "10px",
         width: "50px",
         borderRadius: "5px",
-        border: "1px solid #000",
+        border: "1px solid #000"
     };
 
     const buttonstyle = {
         textAlign: "center",
         border: "1px solid #000",
-        borderRadius: "30px"
+        borderRadius: "30px",
+        marginLeft: "130px",
+
     };
 
     const handleOpen = () => {
@@ -178,9 +202,9 @@ const LanguageChanger = () => {
         >
             <Box sx={modalStyle}>
                 <h2 id="parent-modal-title" style={{ textAlign: "center" }}>{t("OTP Verification")}</h2>
-                <p id="parent-modal-description" style={{ padding: "10px" }}>
-                    {t("code has been sent to :  ")}
-                    {user.email}
+                <p id="parent-modal-description" style={{ padding: "15px" }}>
+                    {t("code has been sent to you : ")}
+                    {user.email.slice(0, 3) + "*****" + user.email.slice(13, user.email.length)}
                 </p>
                 <div className="otpField" style={inputContainerStyle}>
                     <TextField
@@ -188,13 +212,6 @@ const LanguageChanger = () => {
                         id="otp1"
                         value={otp1}
                         onChange={(e) => handleOtpChange(setOtp1, "otp2", null, e)}
-                   
-                    // onChange={(e) => {
-                    //   setOtp1(e.target.value.slice(0, 1));
-                    //   if (e.target.value.length === 1) {
-                    //     document.getElementById("otp2").focus();
-                    //   }
-                    // }}
                     />
                     <TextField
                         style={inputStyle}
@@ -210,31 +227,18 @@ const LanguageChanger = () => {
                                 document.getElementById("otp1").focus();
                             }
                         }}
-                    // onChange={(e) => {
-                    //   setOtp2(e.target.value.slice(0, 1));
-                    //   if (e.target.value.length === 1) {
-                    //     document.getElementById("otp3").focus();
-                    //   }
-                    // }}
                     />
                     <TextField
                         style={inputStyle}
                         id="otp3"
                         value={otp3}
                         onChange={(e) => handleOtpChange(setOtp3, "otp4", "otp2", e)}
-                    // onChange={(e) => {
-                    //   setOtp3(e.target.value.slice(0, 1));
-                    //   if (e.target.value.length === 1) {
-                    //     document.getElementById("otp4").focus();
-                    //   }
-                    // }}
                     />
                     <TextField
                         style={inputStyle}
                         id="otp4"
                         value={otp4}
                         onChange={(e) => handleOtpChange(setOtp4, null, "otp3", e)}
-                    // onChange={(e) => setOtp4(e.target.value.slice(0, 1))}
                     />
                 </div>
                 <p id="parent-modal-description" style={{ textAlign: "center" }}>
@@ -246,38 +250,84 @@ const LanguageChanger = () => {
 
         </Modal>
     );
+
+    const [isHovered, setIsHovered] = useState(false);
+    const [isClicked, setIsClicked] = useState(false);
+
+    const handleHover = () => setIsHovered(true);
+    const handleLeave = () => setIsHovered(false);
+
+    const handleClickWrapper = (event) => {
+        setAnchorEl(event.currentTarget);
+        setIsClicked(!isClicked); // Toggle click state on button click
+    };
+
+
+
     return (
-        <div>
-            <Button
-                aria-controls="simple-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
-            >
-                <LanguageIcon style={{ fontSize: "30px" }} />
-            </Button>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClick={handleClose}
-                onClose={handleClose}
-            >
-                {languages.map((language) => (
-                    <MenuItem key={language.code} onClick={() => changeLanguages(language.code)}>
-                        {language.name}
-                        <Divider />
-                    </MenuItem>
-                ))}
-            </Menu>
-            {otpModal}
-            <Snackbar
-                open={open}
-                autoHideDuration={10000}
-                onClose={handleCloseSnackbar}
-                message={t("OTP verified successfully!")}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            />
-        </div>
+        <ThemeProvider theme={customTheme}>
+            <div>
+                <Button
+                    id="basic-button"
+                    aria-controls={isHovered ? 'basic-menu' : undefined} // Control aria-controls based on hover
+                    aria-haspopup="true"
+                    aria-expanded={isHovered ? 'true' : undefined}
+                    onMouseEnter={handleHover}
+                    onMouseLeave={handleLeave}
+                    onClick={handleClickWrapper}
+
+                >
+                    <IconButton sx={{ color: 'black', backgroundColor: 'inherit', '&:hover': { color: 'rgb(15, 177, 241)', backgroundColor: 'rgb(173, 226, 247)' } }}>
+                        <close id="languages"> <LanguageIcon style={{ fontSize: "30px", color: isClicked ? 'lightgreen' : 'inherit', }} /> </close>
+
+                    </IconButton>
+                    {/* {isHovered && ( // Only render circle on hover
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                backgroundColor: 'rgba(0, 0, 0, 0.2)', // Transparent circle background
+                                borderRadius: '50%',
+                            }}
+                        />
+                    )} */}
+                </Button>
+                <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                    }}
+                    onClick={handleClose}
+                    onClose={handleClose}
+                >
+
+                    {languages.map((language) => (
+                        <div key={language.code} style={{ padding: '2px' }}>
+                            <MenuItem onClick={() => changeLanguages(language.code)}>
+                                {language.name}
+                            </MenuItem>
+                            {languages.indexOf(language) !== languages.length - 1 && (
+                                <hr style={{ border: '0.5px solid #ccc', margin: '2px 0' }} />
+                            )}
+                        </div>
+                    ))}
+
+                </Menu >
+                {otpModal}
+                < Snackbar
+                    open={open}
+                    autoHideDuration={10000}
+                    onClose={handleCloseSnackbar}
+                    message={t("OTP verified successfully!")}
+                    anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                />
+            </div >
+        </ThemeProvider>
     );
 };
 

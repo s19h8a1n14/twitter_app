@@ -10,6 +10,7 @@ import Post from "../../Feed/Post/Post";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import EditProfile from "../EditProfile/EditProfile";
+import { useTranslation } from "react-i18next";
 
 const MainPage = ({ user }) => {
   const navigate = useNavigate();
@@ -18,7 +19,8 @@ const MainPage = ({ user }) => {
   const [imageURL, setImageURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const userProfilePic = loggedInUser[0]?.profileImage ? loggedInUser[0].profileImage : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
- 
+  const { t } = useTranslation();
+
   useEffect(() => {
     fetch(`http://localhost:5000/userPosts?email=${user?.email}`)
       .then((res) => res.json())
@@ -44,8 +46,7 @@ const MainPage = ({ user }) => {
       )
       .then((res) => {
         const url = res.data.data.display_url;
-        setImageURL(res.data.data.display_url);
-        console.log(res.data.data.display_url);
+        setImageURL(url);
         const useCoverImage = {
           email: user?.email,
           coverImage: url,
@@ -64,8 +65,6 @@ const MainPage = ({ user }) => {
     setIsLoading(true);
     console.log(e.target.files);
     const image = e.target.files[0];
-    // console.log(image);
-
     const formData = new FormData();
     formData.set("image", image);
     axios
@@ -75,8 +74,8 @@ const MainPage = ({ user }) => {
       )
       .then((res) => {
         const url = res.data.data.display_url;
-        setImageURL(res.data.data.display_url);
-        console.log(res.data.data.display_url);
+        setImageURL(url);
+        console.log(imageURL);
         const useprofileImage = {
           email: user?.email,
           profileImage: url,
@@ -191,7 +190,7 @@ const MainPage = ({ user }) => {
                     )}
                   </div>
                 </div>
-                <h4 className="tweetsText">Tweets</h4>
+                <h4 className="tweetsText">{t("Tweets")}</h4>
                 <hr />
               </div>
               {posts.map((p) => (

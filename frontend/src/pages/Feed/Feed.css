@@ -24,5 +24,53 @@
 .feed__header > h2 {
   font-size: 30px;
   font-weight: 600;
-  /* padding-left: 10px; */
+  padding-left: 10px;
 }
+
+.feed_right {
+  display: flex;
+  align-items: center;
+  gap:10px;
+  padding-right: 30px;
+}
+
+#basic-button {
+  cursor: pointer;
+}
+
+#points::after {
+  position: absolute;
+  display: flex;
+  content: "points";
+  visibility: hidden;
+  background-color: #333; 
+  color: rgb(237, 164, 109); 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#points:hover::after {
+  visibility: visible;
+  content: "points";
+}
+
+
+#languages::after {
+  position: absolute;
+  display: flex;
+  content: "languages";
+  visibility: hidden;
+  background-color: #333; 
+  color: rgb(173, 226, 247); 
+  padding: 10px 10px; 
+  border-radius: 5px;
+  font-size: 18px; 
+}
+
+#languages:hover::after {
+  visibility: visible;
+  content: "languages";
+}
+
+

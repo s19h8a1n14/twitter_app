@@ -2,14 +2,14 @@
   display: flex;
   flex: 1;
   width: 100vw;
-  /* min-height: 100vh; */
+  min-height: 100vh;
 }
 
 .form-container {
   flex: 1;
   padding: 50px;
   margin: 10px;
-  /* margin-left: -300px; */
+  margin-left: -250px;
   align-content: center;
 }
 
@@ -36,7 +36,6 @@ h1 {
 .heading1,
 h3 {
   font-size: 35px;
-
   justify-content: end;
 }
 
@@ -46,10 +45,9 @@ h3 {
 }
 
 .image {
-  /* max-width: 75%; */
-  max-width: 100%;
+  max-width: 90%;
   height: 100%;
-  /* margin-left: -50px; */
+  margin-left: -100px;
 }
 
 input {
@@ -97,21 +95,26 @@ input {
 }
 
 .g-btn {
-  border: 1px solid;
+  border: 2px solid;
   height: 40px !important;
   line-height: 40px !important;
   font-size: 15px !important;
-  width: 70% !important;
-  margin: 10px;
+  width: 100% !important;
+  margin: 10px !important;
 }
 
 .google-button {
   margin-top: 5%;
 }
 
+.g-btn > span {
+   font-size: 18px;
+   margin-left: 5px !important;
+}
+
 .g-btn > div,
 .g-btn > div > svg {
-  height: 30px !important;
+  height: 40px !important;
 }
 
 .errorMessage {

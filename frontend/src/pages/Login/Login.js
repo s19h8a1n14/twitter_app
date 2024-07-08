@@ -1,19 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TwitterImage from "../../assets/images/twitter.jpeg";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import {
   useSignInWithEmailAndPassword,
   useSignInWithGoogle,
 } from "react-firebase-hooks/auth";
-import { auth, db, ref, set } from "../../firebase.init";
+// import { auth, db, ref, set } from "../../firebase.init";
+import { auth } from "../../firebase.init";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import axios from "axios";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   // const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [acess, setAcess] = useState(false);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/timeline").then((res) => {
+      console.log(res.data);
+      if (res.data === "Access granted") {
+        setAcess(true);
+      } else {
+        setAcess(false);
+        alert("Access denied (outside 8 AM to 8 PM).Please login between 8 AM to 8 PM")
+      }
+    });
+  });
 
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
@@ -21,10 +37,14 @@ const Login = () => {
   const [signInWithGoogle, googleUser] =
     useSignInWithGoogle(auth);
 
+
+
   if (user || googleUser) {
-    navigate("/");
+    if (acess === true)
+      navigate("/");
     console.log(user);
     console.log(googleUser);
+
   }
   if (error) {
     console.log(error.message);
@@ -39,33 +59,11 @@ const Login = () => {
     signInWithEmailAndPassword(email, password);
   };
 
-  // const handleGoogleSignIn = () => {
-  //   signInWithGoogle();
-  // };
-
-
-
-  const handleGoogleSignIn = async () => {
-    try {
-      // await signInWithGoogle();
-      const response = await signInWithGoogle();
-      console.log(response);
-      const uid = response.user.uid;
-      const email = response.user.email;
-      const displayName = response.user.displayName;
-      console.log(uid);
-      const userRef = ref(db, 'users/' + uid);
-      await set(userRef, {
-        uid: uid,
-        email: email,
-        displayName: displayName
-      });
-    } catch (error) {
-      // console.error("Error signing in with Google", error);
-      alert("Error signing in with Google");
-
-    }
+  const handleGoogleSignIn = () => {
+    signInWithGoogle();
   };
+
+
 
   return (
     <div className="login-container">
@@ -103,6 +101,7 @@ const Login = () => {
                 onClick={handleGoogleSignIn}
               />
             </div>
+
             <div>
               Don't have an account?
               <Link

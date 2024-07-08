@@ -31,13 +31,14 @@
   height: 50px !important;
   margin-top: 10px !important;
   max-width: 220px !important;
+  margin-bottom: 0px !important;
 }
 
 .sidebar>.Profile_info {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 10px;
+  /* margin-top: 10px; */
   margin-bottom: 10px;
   border-radius: 9999px;
   padding: 10px;
@@ -48,10 +49,10 @@
 }
 
 .subUser_info {
+  margin-left: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 60px;
 }
 
 .user_info>h4 {

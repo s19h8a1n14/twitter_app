@@ -77,7 +77,7 @@
 }
 
 .mainprofile {
-  /* background-color: rgb(207, 206, 206); */
+  background-color: rgb(207, 206, 206);
   margin-top: 0;
   border: 1 px solid white;
 }
@@ -126,17 +126,6 @@
   opacity: 100%;
 }
 
-.Edit-profile-btn {
-  background-color: white;
-  padding: 10px;
-  border: 1px solid;
-  border-radius: 2rem;
-  margin-right: 20px;
-}
-
-.Edit-profile-btn:hover {
-  background-color: rgb(207, 206, 206);
-}
 
 .Tweet {
   background-color: white;
@@ -150,6 +139,7 @@
   margin-top: 0px;
   margin-left: 20px;
   margin-bottom: 10px;
+  font-size: 25px;
 }
 
 .infoContainer {

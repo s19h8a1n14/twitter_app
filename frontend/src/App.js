@@ -10,8 +10,11 @@ import Messages from "./pages/Messages/Messages";
 import Premium from "./pages/Premium/Premium";
 import Lists from "./pages/Lists/Lists";
 import Profile from "./pages/Profile/Profile";
-import More from "./pages/More/More";
 import Notifications from "./pages/Notifications/Notifications";
+import Savedposts from "./pages/Savedposts/Savedposts";
+import Likedposts from "./pages/Likedposts/Likedposts";
+import Settings from "./pages/Settings/Settings";
+
 
 import "./App.css";
 
@@ -31,7 +34,9 @@ function App() {
           <Route path="Premium" element={<Premium />} />
           <Route path="lists" element={<Lists />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="more" element={<More />} />
+          <Route path="savedposts" element={<Savedposts />} />
+          <Route path="likedposts" element={<Likedposts />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
         
         <Route path="/login" element={<Login />} />

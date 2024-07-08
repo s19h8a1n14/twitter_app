@@ -1,12 +1,12 @@
 .modal {
   background-color: white;
   padding: 10px;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
 }
 
-.modal::-webkit-scrollbar {
+/* .modal::-webkit-scrollbar {
   display: none;
-}
+} */
 
 .header {
   margin-top: 0px;
@@ -57,7 +57,7 @@ close::after {
   display: flex;
   visibility: hidden;
   background-color: #333; 
-  color: #fff; 
+  color: #cae2eb; 
   padding: 10px 10px; 
   border-radius: 5px;
   font-size: 16px; 
@@ -144,10 +144,15 @@ close:hover::after {
 }
 
 .text>.e-button {
-  margin: 10px;
-  color: rgb(255, 255, 255);
+  display: inline-block;
   background-color: black;
-  border-radius: 20px;
+  color: white;
+  margin-top: 20px;
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease;
 }
 
 .last-section h2 {
@@ -167,4 +172,19 @@ close:hover::after {
 
 .last-section>.last-btn:hover {
   background-color: #b4b7b9
+}
+
+.Edit-profile-btn {
+  background-color: white;
+  width: 150px;
+  padding: 10px;
+  border: 1px solid;
+  border-radius: 2rem;
+  margin-top: 8px;
+  margin-right: 20px;
+  font-size: 20px;
+}
+
+.Edit-profile-btn:hover {
+  background-color: rgb(207, 206, 206);
 }

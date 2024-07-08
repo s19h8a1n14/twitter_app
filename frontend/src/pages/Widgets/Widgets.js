@@ -15,11 +15,11 @@ const Widgets = () => {
     <div className="widgets">
       <div className="widgets__input">
         <SearchIcon className="widgets__searchIcon" />
-        <input placeholder={t("Search Twitter")} type="text" />
+        <input placeholder={t("Search")} type="text" />
       </div>
 
       <div className="widgets__widgetContainer">
-        <h2>{t("What's happening")}</h2>
+        <h2>{t("What is happening")}</h2>
 
         <TwitterTweetEmbed tweetId={"933354946111705097"} />
 

@@ -3,80 +3,19 @@ const express = require("express");
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
 const moment = require("moment");
-var admin = require("firebase-admin");
-var serviceAccount = require("./serviceAccountKey.json");
-var bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const nm = require("nodemailer");
+const useragent = require('express-useragent');
+const requestIp = require('request-ip');
+const geoip = require('geoip-lite');
 const app = express();
-
 const cors = require('cors');
-
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173']
-}));
-
-
+app.use(cors());
 const port = process.env.PORT || 5000;
 
-const [basic, premium, premiumplus] = ['price_1PNau1RuhCWG0gwCMsPoa8QD', 'price_1PNayoRuhCWG0gwCZFtFjF2k', 'price_1PNb12RuhCWG0gwC0mdZWZD0'];
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://shanmukh-9be27-default-rtdb.firebaseio.com",
-});
-
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
-
-const stripeSession = async (plan) => {
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: plan,
-          quantity: 1
-        }
-      ],
-      success_url: "http://localhost:3000/home/feed",
-      cancel_url: "http://localhost:3000/Premium",
-    });
-    return session;
-  } catch (error) {
-    return error
-  }
-};
-
-app.post("/api/v1/create-subscription-checkout-session", async (req, res) => {
-  const { plan, customerId } = req.body;
-  let planId = null;
-  if (plan == 99) {
-    planId = basic;
-  } else if (plan == 299) {
-    planId = premium;
-  } else if (plan == 499) {
-    planId = premiumplus;
-  }
-
-  try {
-    const session = await stripeSession(planId);
-    const user = await admin.auth().getUser(customerId);
-
-    await admin.database().ref("users").child(user.uid).update({
-      subscription: { sessionId: session.id }
-    });
-    console.log(session);
-    return res.json({ session });
-  } catch (error) {
-    console.error(error); // Log the error
-    res.status(500).json({ message: 'An error occurred' }); // Send a generic error message
-  }
-
-});
-
-
 let session = "";
-let endpointSecret = "whsec_CQRYLwsXnvQbzB8UbxMXJypzIDm5vdwy";
+let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.post('/webhooks', express.raw({ type: 'application/json' }), async (request, response) => {
   const sig = request.headers['stripe-signature'];
@@ -100,62 +39,69 @@ app.post('/webhooks', express.raw({ type: 'application/json' }), async (request,
     case 'checkout.session.completed':
       session = event.data.object;
       console.log(session);
-      const userCollection = client.db("database").collection("users");
-      const user = await userCollection.findOne({
+      let subscriptionType = "";
+
+      const userCollections = client.db("database").collection("users");
+
+      const user = await userCollections.findOne({
         email: session.customer_details.email,
       });
       if (user) {
-        await userCollection.updateOne(
+        await userCollections.updateOne(
+          { email: session.customer_details.email },
           {
-            email: session.customer_details.email,
-          },
-          {
-            $set: { subscription: true },
+            $set: {
+              isSubscribed: true,
+              subscriptionExpiry: Date.now() + 2592000000, // Set expiry 30 days from now
+            },
           }
         );
       }
+
       let emailto = `${session.customer_details.email}`;
       if (session.payment_link === "plink_1PP5lnRuhCWG0gwCRGx3QyGf") {
-        // subscriptionNumber = 1;
-        await userCollection.updateOne(
+        subscriptionType = "Basic";
+        await userCollections.updateOne(
           { email: emailto },
-          { $set: { isSubscribed: 1 } }
-        );
-        // set subscription expiry to 1 month from present date
-        await userCollection.updateOne(
-          { email: emailto },
-          { $set: { subscriptionExpiry: Date.now() + 2592000000 } }
+          {
+            $set: {
+              subscriptionType: "Basic",
+            },
+          }
         );
       } else if (session.payment_link === "plink_1PQ6ixRuhCWG0gwCmTBRgq3d") {
-        // subscriptionNumber = 2;
-        await userCollection.updateOne(
+        subscriptionType = "Premium";
+        await userCollections.updateOne(
           { email: emailto },
-          { $set: { isSubscribed: 2 } }
+          {
+            $set: {
+              subscriptionType: "Premium",
+            },
+          }
         );
-        // set subscription expiry to 1 month from present date
-        await userCollection.updateOne(
-          { email: emailto },
-          { $set: { subscriptionExpiry: Date.now() + 2592000000 } }
-        );
-
       } else if (session.payment_link === "plink_1PQqQmRuhCWG0gwCpERyX0n5") {
-        // subscriptionNumber = 3;
-        await userCollection.updateOne(
+        subscriptionType = "PremiumPlus";
+        await userCollections.updateOne(
           { email: emailto },
-          { $set: { isSubscribed: 3 } }
+          {
+            $set: {
+              subscriptionType: "PremiumPlus",
+            },
+          }
         );
-        // set subscription expiry to 1 month from present date
-        await userCollection.updateOne(
-          { email: emailto },
-          { $set: { subscriptionExpiry: Date.now() + 2592000000 } }
-        );
-
       }
+      let amountPaid = session.amount_total / 100;
       let info = await transport.sendMail({
         from: process.env.EMAIL,
-        to: `${session.customer_details.email}`,
-        subject: "Thank you for subscribing to our service",
-        html: `<p>Payment  is successful</p>`,
+        to: emailto,
+        subject: `Thank you for subscribing to Twitter ${subscriptionType} Plan`,
+        html: `
+        <div>
+        <h3>Dear ${session.customer_details.name},</h3>
+
+        <p>Your Payment of ${amountPaid} is Succesfully received.Enjoy your " ${subscriptionType}" Plan for a month.</p>
+        </div>
+        `,
       });
       console.log("message sent", info.messageId);
       // Then define and call a function to handle the event checkout.session.completed
@@ -171,8 +117,17 @@ app.post('/webhooks', express.raw({ type: 'application/json' }), async (request,
 
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
+//to get userInfo 
+app.use(useragent.express());
+app.use(requestIp.mw());
+app.use((req, res, next) => {
+  const ip = req.clientIp;
+  const geo = geoip.lookup(ip);
+  req.geoip = geo;
+  next();
+});
 
 app.post("/sendotp", (req, res) => {
   let email = req.body.email;
@@ -199,7 +154,6 @@ app.post("/sendotp", (req, res) => {
       res.send("OTP sent successfully");
     }
   });
-
 });
 
 app.post("/verifyotp", (req, res) => {
@@ -212,8 +166,6 @@ app.post("/verifyotp", (req, res) => {
   }
 });
 
-
-
 let savedOtps = {};
 var transport = nm.createTransport(
   {
@@ -222,7 +174,6 @@ var transport = nm.createTransport(
     secure: false,
     auth: {
       user: process.env.EMAIL,
-      // pass: "nmav zdty chrj zqgc",
       pass: process.env.PASSWORD,
     },
   }
@@ -233,84 +184,284 @@ app.get("/", (req, res) => {
 });
 
 
-
-// const uri = `mongodb+srv://varadaraju758:Shanmukh@cluster0.e5kvfke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const uri=process.env.MONGO_URI;
-
-
-const client = new MongoClient(uri, {});
-
+const uri = process.env.MONGO_URI;
+const client = new MongoClient(uri, {
+  // useNewUrlParser: true, useUnifiedTopology: true 
+});
 
 async function run() {
   try {
     await client.connect();
-    const postCollection = client.db("database").collection("posts");
-    const userCollection = client.db("database").collection("users");
-    const videoCollection = client.db("database").collection("videos");
+    const postCollections = client.db("database").collection("posts");
+    const userCollections = client.db("database").collection("users");
+    const videoCollections = client.db("database").collection("videos");
+    const imageCollections = client.db("database").collection("images");
 
+    app.get("/timeline", async (req, res) => {
+      const currentTime = new Date();
 
+      // Set hours, minutes, and seconds to 0 for cleaner comparison
+      currentTime.setHours(currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds(), 0);
+
+      const startTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 8, 0, 0); // 8 AM
+      const endTime = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate(), 24, 0, 0); // 8 PM (adjust for desired end time)
+
+      // const device = req.useragent.isMobile ? "Mobile" : req.useragent.isDesktop ? "Desktop" : "Tablet";
+      const device = req.useragent.isDesktop ? "Desktop" : req.useragent.isMobile ? "Mobile" : "Tablet";
+      if (device === "Mobile") {
+        if (currentTime >= startTime && currentTime < endTime) { // Use < for excluding end time
+          console.log("Access granted (within 8 AM to 8 PM)");
+          res.send("Acess granted")
+        } else {
+          console.log("Access denied (outside 8 AM to 8 PM)");
+          res.send("Access denied")
+        }
+      }
+      else {
+        res.send("Access granted")
+      }
+    });
 
     app.get("/posts", async (req, res) => {
-      const posts = (await postCollection.find().toArray()).reverse();
+      const posts = (await postCollections.find().toArray()).reverse();
       res.json(posts);
     });
 
     app.get("/users", async (req, res) => {
-      const user = await userCollection.find().toArray();
+      const user = await userCollections.find().toArray();
+      res.json(user);
+    });
+
+    app.get("/images", async (req, res) => {
+      const images = await imageCollections.find().toArray();
+      res.json(images);
+    });
+
+    app.get("/videos", async (req, res) => {
+      const videos = await videoCollections.find().toArray();
+      res.json(videos);
+    });
+
+    app.get("/deviceInfo", async (req, res) => {
+      const email = req.query.email;
+      const user = await userCollections.findOne({ email: email });
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      const deviceInfo =
+      {
+        browser: req.useragent.browser,
+        // os: req.useragent.os.name,
+        // osVersion:req.useragent.os.major,
+        os: req.useragent.os,
+        device: req.useragent.isDesktop ? "Desktop" : req.useragent.isMobile ? "Mobile" : "Tablet",
+        ip: req.clientIp,
+        country: req.geoip,
+        loginTime: new Date(),
+      };
+      user.deviceInfo = deviceInfo;
+      if (deviceInfo.browser === "Chrome" || deviceInfo.device === "Mobile") {
+        user.isdeviceCompatible = false;
+      }
+      else {
+        user.isdeviceCompatible = true;
+      }
+      const result = await userCollections.updateOne({ email }, { $set: user });
       res.json(user);
     });
 
     app.get("/loggedInUser", async (req, res) => {
       const email = req.query.email;
-      const user = await userCollection.find({ email: email }).toArray();
+      const user = await userCollections.find({ email: email }).toArray();
       res.send(user);
     });
 
     app.get("/userPosts", async (req, res) => {
       const email = req.query.email;
       const posts = (
-        await postCollection.find({ email: email }).toArray()
+        await postCollections.find({ email: email }).toArray()
       ).reverse();
       res.send(posts);
     });
 
+    app.get("/userstat", async (req, res) => {
+      const postId = req.query.postId;
+      const post = await postCollections.findOne({ _id: new mongoose.Types.ObjectId(postId) });
+      if (!post) {
+        return res.status(404).send("Post not found");
+      }
+      const email = post.email;
+      const user = await userCollections.findOne({ email: email });
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      const { isSubscribed, subscriptionType, subscriptionExpiry, Points, TotalLikes, postCount } = user;
+      res.json({
+        isSubscribed,
+        subscriptionType,
+        subscriptionExpiry,
+        Points,
+        TotalLikes,
+        postCount
+      })
+    });
+
+    app.get("/userStatus", async (req, res) => {
+      const email = req.query.email;
+      const user = await userCollections
+        .findOne({ email: email })
+      if (!user) {
+        return res.status(404).send("User not found")
+      }
+      const { isSubscribed, subscriptionType, subscriptionExpiry, Points, TotalLikes, postCount } = user;
+      const posts = await postCollections.find({ email: email }).toArray();
+      let totalLikes = 0;
+      posts.forEach(post => {
+        totalLikes += post.Likes;
+      });
+      await userCollections.updateOne({ email: email }, { $set: { TotalLikes: totalLikes } });
+      res.json({ isSubscribed, subscriptionType, subscriptionExpiry, Points, TotalLikes, postCount });
+    });
+
     app.post("/posts", async (req, res) => {
       const post = req.body;
-      const result = await postCollection.insertOne(post);
+      const user = await userCollections.findOne({ email: post.email });
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const posts = await postCollections.find({ email: post.email, createdAt: { $gte: today } }).toArray();
+      let PostsperDay = 5;
+      if (user.isSubscribed) {
+        if (user.subscriptionType === "Basic") {
+          PostsperDay = 20;
+          user.Points += 200;
+        }
+        else if (user.subscriptionType === "Premium") {
+          PostsperDay = 50;
+          user.Points += 500;
+        }
+      }
+      const canPost = posts.length < PostsperDay || user.Points >= 10;
+
+      if (canPost || user.subscriptionType === "PremiumPlus") {
+        const result = await postCollections.insertOne({
+          ...post,
+          createdAt: new Date(),
+        });
+        let points = user.Points;
+        if(PostsperDay===0)
+        points -= 10;
+        let pointstodeduct = user.deductedPoints;
+        if(PostsperDay===0)
+        pointstodeduct += 10;
+
+        await userCollections.updateOne(
+          { email: post.email },
+          { $set: { Points: points, postCount: posts.length + 1, deductedPoints: pointstodeduct } }
+        );
+        res.send(result);
+      }
+      else {
+        res.status(400).json({ error: "Limit Reached" });
+      }
+    });
+
+    app.patch("/posts/:id/like", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollections.findOne({ _id: new mongoose.Types.ObjectId(id) });
+      const result = await postCollections.updateOne({ _id: new mongoose.Types.ObjectId(id) }, { $set: { Likes: post.Likes + 1 } });
       res.send(result);
-      // console.log(result);
+    });
+
+    app.patch("/posts/:id/dislike", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollections.findOne({ _id: new mongoose.Types.ObjectId(id) });
+      const result = await postCollections.updateOne({ _id: new mongoose.Types.ObjectId(id) }, { $set: { Likes: post.Likes - 1 } });
+      res.send(result);
+    });
+
+
+    app.patch("/posts/:id/save", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollections.findOne({ _id: new mongoose.Types.ObjectId(id) });
+      const result = await postCollections.updateOne({ _id: new mongoose.Types.ObjectId(id) }, { $set: { saved: post.saved + 1 } });
+      res.send(result);
+    });
+
+    app.patch("/posts/:id/unsave", async (req, res) => {
+      const { id } = req.params;
+      const post = await postCollections.findOne({ _id: new mongoose.Types.ObjectId(id) });
+      const result = await postCollections.updateOne({ _id: new mongoose.Types.ObjectId(id) }, { $set: { saved: post.saved - 1 } });
+      res.send(result);
     });
 
     app.post("/register", async (req, res) => {
       const user = req.body;
-      const result = await userCollection.insertOne(user);
-      res.send(result);
+      const existingUser = await userCollections.findOne({ email: user.email });
+      if (!existingUser) {
+        user.isSubscribed = false;
+        user.subscriptionType = "";
+        user.subscriptionExpiry = Date.now();
+        user.profileImage = "https://www.pngitem.com/pimgs/m/146-1462217_profile-icon-orange-png-transparent-png.png";
+        user.postCount = 0;
+        user.Points = 50;
+        user.TotalLikes = 0;
+        user.deductedPoints = 0;
+
+        const deviceInfo = {
+          browser: req.useragent.browser,
+          os: req.useragent.os,
+          device: req.useragent.isDesktop ? "Desktop" : req.useragent.isMobile ? "Mobile" : "Tablet",
+          ip: req.clientIp,
+          country: req.geoip,
+          loginTime: new Date(),
+        };
+        if (deviceInfo.browser === "Chrome" || deviceInfo.device === "Mobile") {
+          user.isdeviceCompatible = false;
+        }
+        else {
+          user.isdeviceCompatible = true;
+        }
+        user.deviceInfo = deviceInfo;
+        const result = await userCollections.insertOne(user);
+        res.send(result);
+      }
+    });
+
+    app.post("/images", async (req, res) => {
+      try {
+
+        const image = req.body;
+        const imageObject = { image, Likes: 0 };
+        const result = await imageCollections.insertOne(imageObject);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send("Error in uploading image");
+      }
     });
 
     app.post("/videos", async (req, res) => {
-      
       try {
         const video = req.body;
-      const upvotedvideo = { video, upvotes: 1 };
-      const result = await videoCollection.insertOne(upvotedvideo);
-      res.send(result);
+        const object = { video, Likes: 0 };
+        const result = await videoCollections.insertOne(object);
+        res.send(result);
 
       } catch (error) {
-         console.log(error);
-         res.status(500).send("Error in uploading video");
+        console.log(error);
+        res.status(500).send("Error in uploading video");
       }
     });
 
     app.patch("/userUpdates/:email", async (req, res) => {
-      // const filter = req.params;
+      const filter = req.params;
+      console.log("filter", filter);
       const profile = req.body;
-      console.log("profile",profile.profileimage);
-      console.log("profile",profile.coverImage);
+      console.log("profile", profile.profileImage);
       const options = { upsert: true };
-      console.log("options",options);
       const updateDoc = { $set: profile };
-      console.log("updateDoc",updateDoc);
-      const result = await userCollection.updateOne( updateDoc, options);
+      console.log("updateDoc", updateDoc);
+      const result = await userCollections.updateOne(filter, updateDoc, options);
       res.send(result);
     });
   } catch (error) {
