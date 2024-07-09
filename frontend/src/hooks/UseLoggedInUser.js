@@ -8,7 +8,7 @@ const UseLoggedInUser = () => {
   const [loggedInUser, setLoggedInUser] = useState({});
 
   useEffect(() => {
-    fetch(`http://localhost:5000/loggedInUser?email=${email}`)
+    fetch(`https://twitter-app-zck5.onrender.com/loggedInUser?email=${email}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

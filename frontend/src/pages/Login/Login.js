@@ -20,7 +20,7 @@ const Login = () => {
   const [acess, setAcess] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/timeline").then((res) => {
+    axios.get("https://twitter-app-zck5.onrender.com/timeline").then((res) => {
       console.log(res.data);
       if (res.data === "Access granted") {
         setAcess(true);

@@ -46,7 +46,7 @@ const TweetBox = () => {
 
   useEffect(() => {
     if (user?.providerData[0].providerId === "password") {
-      fetch(`http://localhost:5000/loggedInUser?email=${email}`)
+      fetch(`https://twitter-app-zck5.onrender.com/loggedInUser?email=${email}`)
         .then((res) => res.json())
         .then((data) => {
           setUsername(data[0].userName);
@@ -61,7 +61,7 @@ const TweetBox = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/userStatus?email=${email}`);
+        const response = await fetch(`https://twitter-app-zck5.onrender.com/userStatus?email=${email}`);
         const data = await response.json();
         // console.log(data);
         setPostCount(data.postCount);
@@ -107,7 +107,7 @@ const TweetBox = () => {
       setPost("");
       setImageURL("");
       setVideoURL("");
-      axios.post("http://localhost:5000/posts", userPost)
+      axios.post("https://twitter-app-zck5.onrender.com/posts", userPost)
         .then((response) => {
           console.log(response.data);
           if(response.data.error==="Limit Reached")
@@ -134,7 +134,7 @@ const TweetBox = () => {
         setImageLoading(false);
 
         const imagedata = { url: res.data.data.display_url.toString() };
-        fetch("http://localhost:5000/images", {
+        fetch("https://twitter-app-zck5.onrender.com/images", {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -186,7 +186,7 @@ const TweetBox = () => {
     setOtp2("");
     setOtp3("");
     setOtp4("");
-    axios.post("http://localhost:5000/sendotp", { email: Email })
+    axios.post("https://twitter-app-zck5.onrender.com/sendotp", { email: Email })
       .then((res) => {
         setOpenModal(true);
       })
@@ -198,7 +198,7 @@ const TweetBox = () => {
   const verifyOTP = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
-    return axios.post("http://localhost:5000/verifyotp", { otp: otp, email: userEmail })
+    return axios.post("https://twitter-app-zck5.onrender.com/verifyotp", { otp: otp, email: userEmail })
       .then((res) => {
         console.log(res.data);
         if (res.data === "verified") {
@@ -229,7 +229,7 @@ const TweetBox = () => {
         setVideoLoading(false);
 
         const videodata = { url: res.data.url.toString() };
-        fetch("http://localhost:5000/videos", {
+        fetch("https://twitter-app-zck5.onrender.com/videos", {
           method: "POST",
           headers: {
             "content-type": "application/json",

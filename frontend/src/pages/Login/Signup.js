@@ -40,7 +40,7 @@ const Signup = () => {
       email: email || googleUser.user.email,
       password: password || googleUser.user.uid,
     };
-    const { data } = axios.post("http://localhost:5000/register", userdata);
+    const { data } = axios.post("https://twitter-app-zck5.onrender.com/register", userdata);
     console.log(data);
   };
 
@@ -83,7 +83,7 @@ const Signup = () => {
         email: Email,
         displayName: displayName
           });
-      const { data } = await axios.post("http://localhost:5000/register", userData);
+      const { data } = await axios.post("https://twitter-app-zck5.onrender.com/register", userData);
       console.log(data);
     } catch (error) {
       console.error("Error signing in with Google", error);

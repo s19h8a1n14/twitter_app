@@ -16,7 +16,6 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ListItemIcon from "@mui/material/ListItemIcon";
-// import StarsIcon from '@mui/icons-material/Stars';
 import { Avatar } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
@@ -33,7 +32,8 @@ const Sidebar = ({ handleLogout, user }) => {
 
 
   const userProfilePic = loggedInUser[0]?.profileImage ? loggedInUser[0].profileImage : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
-  const result = user[0]?.email?.split("@")[0];
+  // const result = user[0]?.email?.split("@")[0];
+  const result = loggedInUser[0]?.email?.split("@")[0];
 
   const [anchor, setAnchor] = useState(null);
   const open = Boolean(anchor);

@@ -22,7 +22,7 @@ const MainPage = ({ user }) => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/userPosts?email=${user?.email}`)
+    fetch(`https://twitter-app-zck5.onrender.com/userPosts?email=${user?.email}`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -52,7 +52,7 @@ const MainPage = ({ user }) => {
           coverImage: url,
         };
         if (url) {
-           axios.patch(`http://localhost:5000/userUpdates/${user?.email}`, useCoverImage );
+           axios.patch(`https://twitter-app-zck5.onrender.com/userUpdates/${user?.email}`, useCoverImage );
         }
         setIsLoading(false);
       })
@@ -82,7 +82,7 @@ const MainPage = ({ user }) => {
         };
         if (url) {
           axios.patch(
-            `http://localhost:5000/userUpdates/${user?.email}`,
+            `https://twitter-app-zck5.onrender.com/userUpdates/${user?.email}`,
             useprofileImage
           );
         }

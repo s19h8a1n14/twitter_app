@@ -106,7 +106,7 @@ const LanguageChanger = () => {
         const userEmail = email;
         const otp = otp1 + otp2 + otp3 + otp4;
         console.log(otp);
-        return axios.post("http://localhost:5000/verifyotp", { otp: otp, email: userEmail })
+        return axios.post("https://twitter-app-zck5.onrender.com/verifyotp", { otp: otp, email: userEmail })
             .then((res) => {
                 console.log(res.data);
                 if (res.data === "verified") {
@@ -128,7 +128,7 @@ const LanguageChanger = () => {
         setOtp2("");
         setOtp3("");
         setOtp4("");
-        axios.post("http://localhost:5000/sendotp", { email: userEmail })
+        axios.post("https://twitter-app-zck5.onrender.com/sendotp", { email: userEmail })
             .then((response) => {
                 console.log(response.data);
                 setOpenModal(true);

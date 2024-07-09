@@ -27,14 +27,16 @@ const Post = ({ p }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [postCount, setPostCount] = useState(0);
   const [LikesCount, setLikesCount] = useState(0);
-
+  // s19h8a1n14
+  // /
+  // twitter_app
 
   const handleLikeClick = async () => {
     // setIsLiked(!isLiked);
     if (!isLiked) {
 
       try {
-        const response = await fetch(`http://localhost:5000/posts/${p._id}/like`, {
+        const response = await fetch(`https://twitter-app-zck5.onrender.com/posts/${p._id}/like`, {
           method: 'PATCH'
         });
         if (!response.ok) {
@@ -52,7 +54,7 @@ const Post = ({ p }) => {
     } else {
 
       try {
-        const response = await fetch(`http://localhost:5000/posts/${p._id}/dislike`, {
+        const response = await fetch(`https://twitter-app-zck5.onrender.com/posts/${p._id}/dislike`, {
           method: 'PATCH'
         });
         if (!response.ok) {
@@ -70,7 +72,7 @@ const Post = ({ p }) => {
   const handleSaveClick = async () => {
     if (!isSaved) {
       try {
-        const resonse = await fetch(`http://localhost:5000/posts/${p._id}/save`, {
+        const resonse = await fetch(`https://twitter-app-zck5.onrender.com/posts/${p._id}/save`, {
           method: 'PATCH'
         });
         if (!resonse.ok) {
@@ -86,7 +88,7 @@ const Post = ({ p }) => {
     }
     else {
       try {
-        const resonse = await fetch(`http://localhost:5000/posts/${p._id}/unsave`, {
+        const resonse = await fetch(`https://twitter-app-zck5.onrender.com/posts/${p._id}/unsave`, {
           method: 'PATCH'
         });
         if (!resonse.ok) {
@@ -110,7 +112,7 @@ const Post = ({ p }) => {
       setIsLiked(JSON.parse(storedLikeState)); 
     }
 
-    fetch(`http://localhost:5000/userStat?postid=${p._id}`)
+    fetch(`https://twitter-app-zck5.onrender.com/userStat?postid=${p._id}`)
       .then((res) => res.json())
       .then((data) => {
         setPostCount(data.postCount);

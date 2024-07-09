@@ -27,7 +27,7 @@ const Home = () => {
     const getData = async () => {
       if (!deviceInfoRef.current.browser && !deviceInfoRef.current.device ) {
         // Check if both browser and device are undefined (one-time check)
-        const response = await fetch(`http://localhost:5000/deviceInfo?email=${email}`);
+        const response = await fetch(`https://twitter-app-zck5.onrender.com/deviceInfo?email=${email}`);
         const data = await response.json();
 
         deviceInfoRef.current.browser = data.deviceInfo.browser;
@@ -52,7 +52,7 @@ const Home = () => {
     setOtp2("");
     setOtp3("");
     setOtp4("");
-    axios.post("http://localhost:5000/sendotp", { email: Email })
+    axios.post("https://twitter-app-zck5.onrender.com/sendotp", { email: Email })
       .then((res) => {
         setOpenModal(true);
       })
@@ -65,7 +65,7 @@ const Home = () => {
   const verifyOTP = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
-    return axios.post("http://localhost:5000/verifyotp", { otp: otp, email: userEmail })
+    return axios.post("https://twitter-app-zck5.onrender.com/verifyotp", { otp: otp, email: userEmail })
       .then((res) => {
         console.log(res.data);
         if (res.data === "verified") {

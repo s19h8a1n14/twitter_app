@@ -18,7 +18,7 @@ const Feed = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch("http://localhost:5000/posts")
+    fetch("https://twitter-app-zck5.onrender.com/posts")
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -26,13 +26,17 @@ const Feed = () => {
   }, [posts]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/userStatus?email=${email}`)
+    fetch(`https://twitter-app-zck5.onrender.com/userStatus?email=${email}`)
       .then((res) => res.json())
       .then((data) => {
         setPoints(data.Points);
         setIsSubscribed(data.isSubscribed);
       });
   }, [email]);
+
+  // s19h8a1n14
+  // /
+  // twitter_app
 
 
   return (
