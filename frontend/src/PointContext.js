@@ -13,7 +13,7 @@ const PointProvider = ({ children }) => {
     const fetchUserPoints = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/loggedInUser?email=${userEmail}`
+          `https://twitter-1-8ggt.onrender.com/loggedInUser?email=${userEmail}`
         );
         if (response.data.length > 0) {
           setPoints(response.data[0].points || 0);

@@ -12,7 +12,9 @@ const Bookmarks = () => {
   const [user] = useAuthState(auth);
   const { t } = useTranslation();
   useEffect(() => {
-    fetch(`http://localhost:5000/userBookmarks?email=${user?.email}`)
+    fetch(
+      `https://twitter-1-8ggt.onrender.com/userBookmarks?email=${user?.email}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);

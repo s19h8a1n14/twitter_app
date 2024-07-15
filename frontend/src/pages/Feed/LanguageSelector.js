@@ -72,14 +72,17 @@ const LanguageSelector = () => {
     setOtp2("");
     setOtp3("");
     setOtp4("");
-    return axios.post("http://localhost:5000/sendotp", { email });
+    return axios.post("https://twitter-1-8ggt.onrender.com/sendotp", { email });
   };
   const verify = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
     console.log(otp);
     return axios
-      .post("http://localhost:5000/verify", { otp, email: userEmail })
+      .post("https://twitter-1-8ggt.onrender.com/verify", {
+        otp,
+        email: userEmail,
+      })
       .then((res) => {
         console.log(res.data);
         if (res.data === "Verified") {

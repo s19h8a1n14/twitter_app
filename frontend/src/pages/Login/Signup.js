@@ -40,9 +40,11 @@ const Signup = () => {
         points: 0,
         subscription: false,
       };
-      axios.post("http://localhost:5000/register", userData).then(() => {
-        navigate("/");
-      });
+      axios
+        .post("https://twitter-1-8ggt.onrender.com/register", userData)
+        .then(() => {
+          navigate("/");
+        });
     }
   }, [user, googleUser]);
 
@@ -73,7 +75,7 @@ const Signup = () => {
     //   points: points,
     //   subscription: subscription,
     // };
-    // const { data } = axios.post("http://localhost:5000/register", user);
+    // const { data } = axios.post("https://twitter-1-8ggt.onrender.com/register", user);
     // console.log(data);
   };
 

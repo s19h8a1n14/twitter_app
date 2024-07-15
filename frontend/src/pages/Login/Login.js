@@ -32,16 +32,16 @@ const Login = () => {
     console.log(googleUser);
   }
 
-  useEffect(() => {
-    // fetch from router /time
-    axios.get("http://localhost:5000/time").then((res) => {
-      if (res.data === "Access granted") {
-      } else {
-        setOpen(true);
-        // console.log(res.data);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   // fetch from router /time
+  //   axios.get("https://twitter-1-8ggt.onrender.com/time").then((res) => {
+  //     if (res.data === "Access granted") {
+  //     } else {
+  //       setOpen(true);
+  //       // console.log(res.data);
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (user || googleUser) {
@@ -50,7 +50,7 @@ const Login = () => {
         email: currentUser.email,
       };
       axios
-        .post("http://localhost:5000/login", userData)
+        .post("https://twitter-1-8ggt.onrender.com/login", userData)
         .then((response) => {
           console.log(response);
           if (response.status === 200) {

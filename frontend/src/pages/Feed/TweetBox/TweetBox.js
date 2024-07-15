@@ -48,7 +48,7 @@ const TweetBox = () => {
 
   useEffect(() => {
     if (user?.providerData[0].providerId === "password") {
-      fetch(`http://localhost:5000/loggedInUser?email=${email}`)
+      fetch(`https://twitter-1-8ggt.onrender.com/loggedInUser?email=${email}`)
         .then((res) => res.json())
         .then((data) => {
           setUsername(data[0].userName);
@@ -81,13 +81,16 @@ const TweetBox = () => {
       };
 
       try {
-        const response = await fetch("http://localhost:5000/posts", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify(userPost),
-        });
+        const response = await fetch(
+          "https://twitter-1-8ggt.onrender.com/posts",
+          {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify(userPost),
+          }
+        );
         const data = await response.json();
         if (data.error === "Daily post limit reached") {
           setDesc("Daily post limit reached");
@@ -123,8 +126,8 @@ const TweetBox = () => {
     }
   };
 
-  const MAX_VIDEO_SIZE = 10480;
-  const MAX_VIDEO_DURATION = 100;
+  const MAX_VIDEO_SIZE = 1024000;
+  const MAX_VIDEO_DURATION = 1000 * 60 * 60 * 60;
 
   const handleUploadVideo = (e) => {
     e.preventDefault();
@@ -169,7 +172,7 @@ const TweetBox = () => {
     setOtp2("");
     setOtp3("");
     setOtp4("");
-    return axios.post("http://localhost:5000/sendotp", { email });
+    return axios.post("https://twitter-1-8ggt.onrender.com/sendotp", { email });
   };
 
   // Function to verify OTP and upload video
@@ -178,7 +181,10 @@ const TweetBox = () => {
     const otp = otp1 + otp2 + otp3 + otp4;
     console.log(otp);
     return axios
-      .post("http://localhost:5000/verify", { otp, email: userEmail })
+      .post("https://twitter-1-8ggt.onrender.com/verify", {
+        otp,
+        email: userEmail,
+      })
       .then((res) => {
         console.log(res.data);
         if (res.data === "Verified") {
@@ -216,7 +222,7 @@ const TweetBox = () => {
           url: res.data.url.toString(),
         };
 
-        return fetch("http://localhost:5000/videos", {
+        return fetch("https://twitter-1-8ggt.onrender.com/videos", {
           method: "POST",
           headers: {
             "content-type": "application/json",

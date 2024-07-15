@@ -82,7 +82,7 @@ export default function EditProfile({ user, loggedInUser }) {
       website,
       dob,
     };
-    fetch(`http://localhost:5000/userUpdates/${user?.email}`, {
+    fetch(`https://twitter-1-8ggt.onrender.com/userUpdates/${user?.email}`, {
       method: "PATCH",
       headers: {
         "content-type": "application/json",

@@ -492,16 +492,6 @@ async function run() {
 
       //console.log(currentHour);
 
-      if (
-        device === "Mobile" &&
-        (currentHour < ALLOWED_START_HOUR || currentHour >= ALLOWED_END_HOUR)
-      ) {
-        console.log("Desktop logins are only allowed between 9 AM and 5 PM.");
-        return res
-          .status(400)
-          .send("Mobile logins are only allowed between 9 AM and 5 PM.");
-      }
-
       // Get geographical information from IP address (optional)
       const geo = geoip.lookup(ipAddress);
       if (user) {

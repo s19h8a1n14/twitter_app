@@ -42,7 +42,7 @@ const Post = ({ p }) => {
     const fetchUserId = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/userId?email=${email}`
+          `https://twitter-1-8ggt.onrender.com/userId?email=${email}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -65,7 +65,7 @@ const Post = ({ p }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/upvote?email=${email}`,
+        `https://twitter-1-8ggt.onrender.com/posts/${p._id}/upvote?email=${email}`,
         {
           method: "PATCH",
         }
@@ -85,7 +85,7 @@ const Post = ({ p }) => {
     //console.log(subscribed);
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/like?email=${email}`,
+        `https://twitter-1-8ggt.onrender.com/posts/${p._id}/like?email=${email}`,
         {
           method: "PATCH",
         }
@@ -106,7 +106,7 @@ const Post = ({ p }) => {
     //console.log(subscribed);
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/bookmark`,
+        `https://twitter-1-8ggt.onrender.com/posts/${p._id}/bookmark`,
         {
           method: "PATCH",
           headers: {
@@ -131,7 +131,7 @@ const Post = ({ p }) => {
     //console.log(subscribed);
     try {
       const response = await fetch(
-        `http://localhost:5000/posts/${p._id}/retweet?email=${email}`,
+        `https://twitter-1-8ggt.onrender.com/posts/${p._id}/retweet?email=${email}`,
         {
           method: "PATCH",
         }

@@ -26,7 +26,7 @@ const MainPage = ({ user }) => {
     : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
   useEffect(() => {
-    fetch(`http://localhost:5000/userPosts?email=${user?.email}`)
+    fetch(`https://twitter-1-8ggt.onrender.com/userPosts?email=${user?.email}`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -35,7 +35,9 @@ const MainPage = ({ user }) => {
 
   useEffect(() => {
     console.log(points);
-    fetch(`http://localhost:5000/userPostCount?email=${user.email}`)
+    fetch(
+      `https://twitter-1-8ggt.onrender.com/userPostCount?email=${user.email}`
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Error: ${res.statusText}`);
@@ -74,7 +76,7 @@ const MainPage = ({ user }) => {
         };
         if (url) {
           axios.patch(
-            `http://localhost:5000/userUpdates/${user?.email}`,
+            `https://twitter-1-8ggt.onrender.com/userUpdates/${user?.email}`,
             useCoverImage
           );
         }
@@ -107,7 +109,7 @@ const MainPage = ({ user }) => {
         };
         if (url) {
           axios.patch(
-            `http://localhost:5000/userUpdates/${user?.email}`,
+            `https://twitter-1-8ggt.onrender.com/userUpdates/${user?.email}`,
             useprofileImage
           );
         }
