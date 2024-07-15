@@ -126,7 +126,7 @@ const TweetBox = () => {
     }
   };
 
-  const MAX_VIDEO_SIZE = 1024000;
+  const MAX_VIDEO_SIZE = 1024000000;
   const MAX_VIDEO_DURATION = 1000 * 60 * 60 * 60;
 
   const handleUploadVideo = (e) => {
@@ -137,7 +137,7 @@ const TweetBox = () => {
       alert("No video file selected");
       return;
     }
-
+    console.log(video.size);
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
       setDesc("Video size exceeds maximum limit.");
       setOpen(true);

@@ -466,11 +466,11 @@ async function run() {
     app.post("/login", async (req, res) => {
       const { email } = req.body;
 
-      //console.log(email);
+      console.log(email);
 
       const user = await userCollection.findOne({ email: email });
 
-      //console.log(user);
+      console.log(user);
 
       // Capture user agent information
       const userAgent = req.useragent;
@@ -490,9 +490,6 @@ async function run() {
 
       const currentHour = new Date().getHours();
 
-      //console.log(currentHour);
-
-      // Get geographical information from IP address (optional)
       const geo = geoip.lookup(ipAddress);
       if (user) {
         await userCollection.updateOne(
@@ -505,8 +502,6 @@ async function run() {
                 os: os,
                 device: device,
                 ipAddress: ipAddress,
-                geo: geo,
-                isOtpVerified: browser !== "Chrome" ? false : true,
               },
             },
           }

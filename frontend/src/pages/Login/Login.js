@@ -51,20 +51,8 @@ const Login = () => {
       };
       axios
         .post("https://twitter-1-8ggt.onrender.com/login", userData)
-        .then((response) => {
-          console.log(response);
-          if (response.status === 200) {
-            navigate("/home/feed");
-          } else {
-            console.error("Failed to login");
-          }
-        })
-        .catch((err) => {
-          setOpen(true);
-          console.error("Error logging in:", err);
-          setErrorMessage(
-            err.response ? err.response.data : "An error occurred"
-          );
+        .then(() => {
+          navigate("/");
         });
     }
   }, [user, googleUser, navigate]);
