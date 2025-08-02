@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import Post from "../../Feed/Post/Post";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import EditProfile from "../EditProfile/EditProfile";
-import { PointContext } from "../../../PointContext";
+import API_CONFIG from "../../../config/api";
 
 const MainPage = ({ user }) => {
   const navigate = useNavigate();
@@ -18,15 +18,10 @@ const MainPage = ({ user }) => {
   const [posts, setPosts] = useState([]);
   const [imageURL, setImageURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { points } = useContext(PointContext);
   const [count, setCount] = useState(0);
 
-  const pi = loggedInUser[0]?.profileImage
-    ? loggedInUser[0].profileImage
-    : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
-
   useEffect(() => {
-    fetch(`https://twitter-1-8ggt.onrender.com/userPosts?email=${user?.email}`)
+    fetch(`${API_CONFIG.BASE_URL}/userPosts?email=${user?.email}`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);
@@ -34,9 +29,8 @@ const MainPage = ({ user }) => {
   }, [posts, user?.email]);
 
   useEffect(() => {
-    console.log(points);
     fetch(
-      `https://twitter-1-8ggt.onrender.com/userPostCount?email=${user.email}`
+      `${API_CONFIG.BASE_URL}/userPostCount?email=${user.email}`
     )
       .then((res) => {
         if (!res.ok) {
@@ -57,7 +51,6 @@ const MainPage = ({ user }) => {
   const handleUploadCoverImage = (e) => {
     setIsLoading(true);
     const image = e.target.files[0];
-    console.log(image);
 
     const formData = new FormData();
     formData.set("image", image);
@@ -69,28 +62,25 @@ const MainPage = ({ user }) => {
       .then((res) => {
         const url = res.data.data.display_url;
         setImageURL(res.data.data.display_url);
-        console.log(res.data.data.display_url);
         const useCoverImage = {
           email: user?.email,
           coverImage: url,
         };
         if (url) {
           axios.patch(
-            `https://twitter-1-8ggt.onrender.com/userUpdates/${user?.email}`,
+            `${API_CONFIG.BASE_URL}/userUpdates/${user?.email}`,
             useCoverImage
           );
         }
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };
   const handleUploadProfileImage = (e) => {
     setIsLoading(true);
     const image = e.target.files[0];
-    console.log(image);
 
     const formData = new FormData();
     formData.set("image", image);
@@ -102,21 +92,19 @@ const MainPage = ({ user }) => {
       .then((res) => {
         const url = res.data.data.display_url;
         setImageURL(res.data.data.display_url);
-        console.log(res.data.data.display_url);
         const useprofileImage = {
           email: user?.email,
           profileImage: url,
         };
         if (url) {
           axios.patch(
-            `https://twitter-1-8ggt.onrender.com/userUpdates/${user?.email}`,
+            `${API_CONFIG.BASE_URL}/userUpdates/${user?.email}`,
             useprofileImage
           );
         }
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setIsLoading(false);
       });
   };

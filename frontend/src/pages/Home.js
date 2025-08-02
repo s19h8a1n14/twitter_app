@@ -1,34 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Sidebar from "./Sidebar/Sidebar";
-import Feed from "./Feed/Feed";
 import { Outlet } from "react-router-dom";
 import Widgets from "./Widgets/Widgets";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../firebase.init";
 import { signOut } from "firebase/auth";
-import UseLoggedInUser from "../hooks/UseLoggedInUser";
-import axios from "axios";
-import { Modal, Box, TextField, Button } from "@mui/material";
-import { useTranslation } from "react-i18next";
-//import LanguageSelector from "./Feed/LanguageSelector";
 
 const Home = () => {
   const user = useAuthState(auth);
-  const [loggedInUser] = UseLoggedInUser();
-  const email = loggedInUser[0]?.email;
-  console.log(email);
-  const { t } = useTranslation();
-  const [login, setLogin] = useState([]);
-  const [sent, setSent] = useState(false);
-  const [check, setCheck] = useState({});
-  const [otpCheck, setOtpCheck] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [otp1, setOtp1] = useState("");
-  const [otp2, setOtp2] = useState("");
-  const [otp3, setOtp3] = useState("");
-  const [otp4, setOtp4] = useState("");
-  const [open, setOpen] = useState(false);
-  const [desc, setDesc] = useState("");
 
   // useEffect(() => {
   //   if (loggedInUser && loggedInUser[0]?.loginHistory) {
@@ -63,7 +42,7 @@ const Home = () => {
   //   setOtp3("");
   //   setOtp4("");
   //   return axios.post(
-  //     `https://twitter-1-8ggt.onrender.com/sendotp?email=${email}`,
+  //     `https://twitter-app-4i3a.onrender.com/sendotp?email=${email}`,
   //     {
   //       email,
   //     }
@@ -75,7 +54,7 @@ const Home = () => {
   //   const otp = otp1 + otp2 + otp3 + otp4;
   //   console.log(otp);
   //   return axios
-  //     .post("https://twitter-1-8ggt.onrender.com/verify", {
+  //     .post("https://twitter-app-4i3a.onrender.com/verify", {
   //       otp,
   //       email: userEmail,
   //     })
@@ -84,7 +63,7 @@ const Home = () => {
   //       if (res.data === "Verified") {
   //         setOpenModal(false);
   //         const response = axios.patch(
-  //           "https://twitter-1-8ggt.onrender.com/verifyDevice",
+  //           "https://twitter-app-4i3a.onrender.com/verifyDevice",
   //           {
   //             email: userEmail,
   //           }
@@ -139,7 +118,7 @@ const Home = () => {
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     // fetch from router /time
-  //     axios.get("https://twitter-1-8ggt.onrender.com/time").then((res) => {
+  //     axios.get("https://twitter-app-4i3a.onrender.com/time").then((res) => {
   //       if (res.data === "Access granted") {
   //         // do something
   //       } else {
@@ -214,13 +193,12 @@ const Home = () => {
   const handleLogout = () => {
     signOut(auth);
   };
+
   return (
     <div className="app">
       <Sidebar handleLogout={handleLogout} user={user} />
-
       <Outlet />
       <Widgets />
-      {/* {otpModal} */}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import TweetBox from "./TweetBox/TweetBox";
 import Post from "./Post/Post";
 import LanguageSelector from "./LanguageSelector";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import API_CONFIG from "../../config/api";
 
 const theme = extendTheme({});
 
@@ -10,7 +11,7 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("https://twitter-1-8ggt.onrender.com/posts")
+    fetch(`${API_CONFIG.BASE_URL}/posts`)
       .then((res) => res.json())
       .then((data) => {
         setPosts(data);

@@ -4,9 +4,10 @@ import UseLoggedInUser from "../../hooks/UseLoggedInUser";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
+import API_CONFIG from "../../config/api";
 
 const Points = ({ onClose }) => {
-  const { points, setPoints } = useContext(PointContext);
+  const { points } = useContext(PointContext);
   const [loggedInUser] = UseLoggedInUser();
   const email = loggedInUser[0]?.email;
   const { t } = useTranslation();
@@ -16,12 +17,11 @@ const Points = ({ onClose }) => {
   const monthly = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/monthly?email=${email}`
+        `${API_CONFIG.BASE_URL}/monthly?email=${email}`
       );
 
       if (response.status === 200) {
-        console.log("Subscription updated successfully");
-        // Optionally, you can handle any further logic here after successful update
+        // Subscription updated successfully
       } else {
         console.error("Failed to update subscription");
       }
@@ -32,12 +32,11 @@ const Points = ({ onClose }) => {
   const yearly = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:5000/yearly?email=${email}`
+        `${API_CONFIG.BASE_URL}/yearly?email=${email}`
       );
 
       if (response.status === 200) {
-        console.log("Subscription updated successfully");
-        // Optionally, you can handle any further logic here after successful update
+        // Subscription updated successfully
       } else {
         console.error("Failed to update subscription");
       }

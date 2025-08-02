@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import TwitterImage from "../../assets/images/twitter.png";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import XIcon from "@mui/icons-material/X";
 import auth from "../../firebase.init";
 import {
@@ -10,6 +9,7 @@ import {
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import API_CONFIG from "../../config/api";
 import "./Login.css";
 
 const Signup = () => {
@@ -17,14 +17,10 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
   const [name, setName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const [createUserWithEmailAndPassword, user, loading, error] =
-    useCreateUserWithEmailAndPassword(auth);
-
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
+  const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+  const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
 
   useEffect(() => {
     if (user || googleUser) {
@@ -41,28 +37,15 @@ const Signup = () => {
         subscription: false,
       };
       axios
-        .post("https://twitter-1-8ggt.onrender.com/register", userData)
+        .post(`${API_CONFIG.BASE_URL}/register`, userData)
         .then(() => {
           navigate("/");
         });
     }
-  }, [user, googleUser]);
-
-  if (user || googleUser) {
-    navigate("/");
-    console.log(user);
-    console.log(googleUser);
-  }
-  if (error) {
-    console.log(error.message);
-  }
-  if (loading) {
-    console.log("loading...");
-  }
+  }, [user, googleUser, name, navigate, userName]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
     createUserWithEmailAndPassword(email, password);
 
     // let points = 0;
@@ -75,7 +58,7 @@ const Signup = () => {
     //   points: points,
     //   subscription: subscription,
     // };
-    // const { data } = axios.post("https://twitter-1-8ggt.onrender.com/register", user);
+    // const { data } = axios.post("https://twitter-app-4i3a.onrender.com/register", user);
     // console.log(data);
   };
 

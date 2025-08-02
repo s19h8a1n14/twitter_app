@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import UseLoggedInUser from "./hooks/UseLoggedInUser";
+import API_CONFIG from "./config/api";
 
 const PointContext = createContext();
 
@@ -13,13 +14,13 @@ const PointProvider = ({ children }) => {
     const fetchUserPoints = async () => {
       try {
         const response = await axios.get(
-          `https://twitter-1-8ggt.onrender.com/loggedInUser?email=${userEmail}`
+          `${API_CONFIG.BASE_URL}/loggedInUser?email=${userEmail}`
         );
         if (response.data.length > 0) {
           setPoints(response.data[0].points || 0);
         }
       } catch (error) {
-        console.error("Failed to fetch user points:", error);
+        // Silently fail - user points will default to 0
       }
     };
 

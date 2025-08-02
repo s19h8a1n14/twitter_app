@@ -10,31 +10,23 @@ import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Snackbar from "@mui/material/Snackbar";
+import API_CONFIG from "../../config/api";
 import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(auth);
 
-  const [signInWithGoogle, googleUser, googleLoading, googleError] =
-    useSignInWithGoogle(auth);
-
-  if (user || googleUser) {
-    // navigate("/");
-    console.log(user);
-    console.log(googleUser);
-  }
+  const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
 
   // useEffect(() => {
   //   // fetch from router /time
-  //   axios.get("https://twitter-1-8ggt.onrender.com/time").then((res) => {
+  //   axios.get("https://twitter-app-4i3a.onrender.com/time").then((res) => {
   //     if (res.data === "Access granted") {
   //     } else {
   //       setOpen(true);
@@ -50,19 +42,12 @@ const Login = () => {
         email: currentUser.email,
       };
       axios
-        .post("https://twitter-1-8ggt.onrender.com/login", userData)
+        .post(`${API_CONFIG.BASE_URL}/login`, userData)
         .then(() => {
           navigate("/");
         });
     }
   }, [user, googleUser, navigate]);
-
-  if (error) {
-    console.log(error.message);
-  }
-  if (loading) {
-    console.log("loading...");
-  }
 
   const handleClose = () => {
     setOpen(false);
@@ -70,7 +55,6 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
     signInWithEmailAndPassword(email, password);
   };
 

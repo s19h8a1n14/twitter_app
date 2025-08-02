@@ -7,10 +7,10 @@ import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../../firebase.init";
 import { useTranslation } from "react-i18next";
-import { useToast } from "@chakra-ui/react";
 import Snackbar from "@mui/material/Snackbar";
 import { Link } from "react-router-dom";
-import "./TweetBox.css"; // Assuming the styles are saved in a TweetBox.css file
+import API_CONFIG from "../../../config/api";
+import "./TweetBox.css";
 
 const TweetBox = () => {
   const [post, setPost] = useState("");
@@ -25,7 +25,6 @@ const TweetBox = () => {
   const [user] = useAuthState(auth);
   const email = user?.email;
   const { t } = useTranslation();
-  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [desc, setDesc] = useState("");
   const [otp1, setOtp1] = useState("");
@@ -33,9 +32,6 @@ const TweetBox = () => {
   const [otp3, setOtp3] = useState("");
   const [otp4, setOtp4] = useState("");
   const [openModal, setOpenModal] = useState(false);
-
-  // For otp verification
-  const [otp, setOtp] = useState("");
 
   const userProfilePic = loggedInUser[0]?.profileImage
     ? loggedInUser[0]?.profileImage
@@ -48,7 +44,7 @@ const TweetBox = () => {
 
   useEffect(() => {
     if (user?.providerData[0].providerId === "password") {
-      fetch(`https://twitter-1-8ggt.onrender.com/loggedInUser?email=${email}`)
+      fetch(`${API_CONFIG.BASE_URL}/loggedInUser?email=${email}`)
         .then((res) => res.json())
         .then((data) => {
           setUsername(data[0].userName);
@@ -82,7 +78,7 @@ const TweetBox = () => {
 
       try {
         const response = await fetch(
-          "https://twitter-1-8ggt.onrender.com/posts",
+          `${API_CONFIG.BASE_URL}/posts`,
           {
             method: "POST",
             headers: {
@@ -137,7 +133,6 @@ const TweetBox = () => {
       alert("No video file selected");
       return;
     }
-    console.log(video.size);
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
       setDesc("Video size exceeds maximum limit.");
       setOpen(true);
@@ -155,7 +150,6 @@ const TweetBox = () => {
         alert("Video exceeds maximum duration limit.");
         return;
       }
-      const uploadedVideo = video;
       requestOTPAndUploadVideo();
     };
 
@@ -172,21 +166,19 @@ const TweetBox = () => {
     setOtp2("");
     setOtp3("");
     setOtp4("");
-    return axios.post("https://twitter-1-8ggt.onrender.com/sendotp", { email });
+    return axios.post(`${API_CONFIG.BASE_URL}/sendotp`, { email });
   };
 
   // Function to verify OTP and upload video
   const verifyOTPAndUploadVideo = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
-    console.log(otp);
     return axios
-      .post("https://twitter-1-8ggt.onrender.com/verify", {
+      .post(`${API_CONFIG.BASE_URL}/verify`, {
         otp,
         email: userEmail,
       })
       .then((res) => {
-        console.log(res.data);
         if (res.data === "Verified") {
           setOpenModal(false);
           setDesc("OTP verified successfully.");
@@ -215,14 +207,13 @@ const TweetBox = () => {
       .post("https://api.cloudinary.com/v1_1/df9xugdxg/video/upload", data)
       .then((res) => {
         setVideoURL(res.data.url.toString());
-        console.log(res.data.url.toString());
         setVideoLoading(false);
 
         const videoData = {
           url: res.data.url.toString(),
         };
 
-        return fetch("https://twitter-1-8ggt.onrender.com/videos", {
+        return fetch(`${API_CONFIG.BASE_URL}/videos`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -231,7 +222,7 @@ const TweetBox = () => {
         })
           .then((response) => response.json())
           .then((res) => {
-            console.log("Video uploaded and upvoted:", res);
+            // Video uploaded successfully
           })
           .catch((err) => {
             console.error("Error saving video:", err);
@@ -239,7 +230,6 @@ const TweetBox = () => {
           });
       })
       .catch((err) => {
-        console.log(err);
         setVideoLoading(false);
       });
   };
@@ -249,7 +239,6 @@ const TweetBox = () => {
     const userEmail = email;
     sendOTP(userEmail)
       .then((otpResponse) => {
-        console.log(otpResponse.data);
         setOpenModal(true);
       })
       .catch((err) => {
