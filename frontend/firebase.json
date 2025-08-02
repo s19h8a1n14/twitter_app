@@ -1,4 +1,7 @@
 {
+  "projects": {
+    "default": "shanmukh-9be27"
+  },
   "hosting": {
     "public": "build",
     "ignore": [

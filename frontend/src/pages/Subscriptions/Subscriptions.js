@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 function App({ onClose }) {
   const [loggedInUser] = UseLoggedInUser();
   const subscribed = loggedInUser[0]?.subscription;
+  console.log(subscribed);
   const plan = loggedInUser[0]?.isSubscribed;
   const { t } = useTranslation();
 

@@ -32,7 +32,7 @@ const apikey = process.env.API_KEY;
 
 const stripe = require("stripe")(apikey);
 
-const endpointSecret = "whsec_HDfVkAvpRqSA097gZITne5zJJWobEkU3";
+const endpointSecret = process.env.ENDPOINT_SECRET;
 
 let session = "";
 
@@ -145,7 +145,7 @@ app.post(
                     <p class="fs-sm">
                     NIT Durgapur
                     <br>
-                    <a href="#!" class="text-purple">balajikurakula8@gmail.com
+                    <a href="#!" class="text-purple">${process.env.USER_EMAIL}
                     </a>
                     </p>
                   </div>
@@ -214,6 +214,22 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// Test email configuration
+app.get("/test-email", async (req, res) => {
+  try {
+    let info = await transporter.sendMail({
+      from: process.env.USER_EMAIL,
+      to: process.env.USER_EMAIL, // Send to yourself for testing
+      subject: "Email Configuration Test",
+      html: `<p>If you receive this, your email configuration is working!</p>`,
+    });
+    res.send(`Test email sent successfully! Message ID: ${info.messageId}`);
+  } catch (error) {
+    console.error("Email test failed:", error);
+    res.status(500).send(`Email test failed: ${error.message}`);
+  }
+});
+
 app.post("/sendotp", (req, res) => {
   let email = req.body.email;
   console.log(email);
@@ -236,7 +252,7 @@ app.post("/sendotp", (req, res) => {
     } else {
       savedOTPS[email] = otp;
       setTimeout(() => {
-        delete savedOTPS.email;
+        delete savedOTPS[email]; // Fixed: was deleting savedOTPS.email instead of savedOTPS[email]
       }, 60000);
       res.send("Sent OTP successfully");
     }
@@ -252,8 +268,6 @@ app.post("/verify", (req, res) => {
     res.status(400).send("Invalid OTP");
   }
 });
-
-//const uri = `mongodb+srv://balajikurakula8:balaji@cluster0.bw7ylmc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const uri = process.env.MONGO_URL;
 const client = new MongoClient(uri, {});
@@ -570,7 +584,7 @@ async function run() {
       }
     });
 
-    app.patch("/monthly", async (req, res) => {
+    app.patch("/yearly", async (req, res) => {
       const email = req.query.email;
 
       try {
@@ -593,7 +607,7 @@ async function run() {
             $set: {
               subscription: true,
               isSubscribed: 2,
-              subscriptionExpiry: Date.now() + 2592000000, // 1 month in milliseconds
+              subscriptionExpiry: Date.now() + 31536000000, // 1 year in milliseconds
               points: newPoints,
             },
           }

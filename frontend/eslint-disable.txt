@@ -1,0 +1,5 @@
+// ESLint disable comments for common unused variables
+// Add this to the top of files to suppress warnings temporarily
+
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
