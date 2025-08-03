@@ -29,58 +29,57 @@ const Signup = () => {
 
   useEffect(() => {
     if (user || googleUser) {
-      const currentUser = user || googleUser.user;
-      // console.log(currentUser.user.email);
-      // console.log(currentUser.displayName);
-      // console.log(currentUser.email);
-
-      const userData = {
-        userName: userName || currentUser.user.displayName,
-        name: name || currentUser.user.displayName,
-        email: currentUser.user.email,
-        points: 0,
-        subscription: false,
-      };
-      axios
-        .post(`${API_CONFIG.BASE_URL}/register`, userData)
-        .then(() => {
-          navigate("/");
-        });
+      console.log("User found, registering...");
+      const currentUser = user?.user || googleUser?.user;
+      
+      if (currentUser) {
+        const userData = {
+          userName: userName || currentUser.displayName?.replace(/\s+/g, '') || currentUser.email.split('@')[0],
+          name: name || currentUser.displayName || currentUser.email.split('@')[0],
+          email: currentUser.email,
+          points: 0,
+          subscription: false,
+        };
+        
+        console.log("Sending user data:", userData);
+        
+        axios
+          .post(`${API_CONFIG.BASE_URL}/register`, userData)
+          .then((response) => {
+            console.log("Registration successful:", response.data);
+            navigate("/");
+          })
+          .catch((error) => {
+            console.error("Registration error:", error);
+            // If user already exists, still navigate to home
+            if (error.response?.status === 400) {
+              navigate("/");
+            }
+          });
+      }
     }
-  }, [user, googleUser]);
+  }, [user, googleUser, navigate, userName, name]);
 
-  if (user || googleUser) {
-    navigate("/");
-    console.log(user);
-    console.log(googleUser);
-  }
+  
+  // Handle errors and loading states
   if (error) {
-    console.log(error.message);
+    console.log("Auth error:", error.message);
   }
   if (loading) {
-    console.log("loading...");
+    console.log("Loading authentication...");
   }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(email, password);
+    console.log("Attempting signup with:", email);
+    
+    if (!userName || !name || !email || !password) {
+      alert("Please fill in all fields");
+      return;
+    }
+    
     createUserWithEmailAndPassword(email, password);
-
-    // let points = 0;
-    // let subscription = false;
-
-    // const user = {
-    //   userName: userName,
-    //   name: name,
-    //   email: email,
-    //   points: points,
-    //   subscription: subscription,
-    // };
-    // const { data } = axios.post("https://twitter-app-4i3a.onrender.com/register", user);
-    // console.log(data);
-  };
-
-  const handleGoogleSignIn = () => {
+  };  const handleGoogleSignIn = () => {
     signInWithGoogle();
   };
 
@@ -120,11 +119,18 @@ const Signup = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <div className="btn-login">
-              <button type="submit" className="btn">
-                Signup
+              <button type="submit" className="btn" disabled={loading}>
+                {loading ? "Creating Account..." : "Signup"}
               </button>
             </div>
           </form>
+          
+          {error && (
+            <div style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
+              Error: {error.message}
+            </div>
+          )}
+          
           <hr />
           <div className="google-button">
             <GoogleButton
