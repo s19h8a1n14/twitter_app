@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-// import Widgets from "../pages/Widgets/Widgets";
+import React, { useEffect, useState } from "react";
+import Widgets from "../pages/Widgets/Widgets";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../firebase.init";
 import API_CONFIG from "../config/api";
@@ -16,7 +16,7 @@ const UseLoggedInUser = () => {
         setLoggedInUser(data);
       })
       .catch((error) => {
-        // Error fetching user data
+        console.log(error);
       });
   }, [email, loggedInUser]);
 

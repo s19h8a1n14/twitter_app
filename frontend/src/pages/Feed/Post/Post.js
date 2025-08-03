@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, Button } from "@mui/material";
+import ButtonBase from "@mui/material/ButtonBase";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -7,9 +8,13 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import RepeatIcon from "@mui/icons-material/Repeat";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import PublishIcon from "@mui/icons-material/Publish";
 import "./Post.css";
 import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
+import auth from "../../../firebase.init";
+import { use } from "i18next";
 import API_CONFIG from "../../../config/api";
+import { useNavigate } from "react-router-dom";
 
 const Post = ({ p }) => {
   const {
@@ -19,11 +24,19 @@ const Post = ({ p }) => {
     video,
     post,
     profilePhoto,
+    upvotes,
+    subscribed,
+    retweets,
   } = p;
   const [loggedInUser] = UseLoggedInUser();
   const email = loggedInUser[0]?.email;
 
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasRetweeted, setHasRetweeted] = useState(false);
+  const [hasBookmarked, setHasBookmarked] = useState(false);
   const [userId, setUserId] = useState("");
+  const navigate = useNavigate();
   const subscription = loggedInUser[0]?.subscription;
 
   useEffect(() => {
@@ -61,14 +74,16 @@ const Post = ({ p }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      await response.json();
+      const data = await response.json();
     } catch (error) {
       console.error("Error:", error);
     }
+    setHasUpvoted(!hasUpvoted);
   };
 
   const handleLikes = async (e) => {
     e.stopPropagation();
+    //console.log(subscribed);
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/posts/${p._id}/like?email=${email}`,
@@ -79,14 +94,17 @@ const Post = ({ p }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      await response.json();
+      const data = await response.json();
+      console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }
+    setHasLiked(!hasLiked);
   };
 
   const handleBookmarks = async (e) => {
     e.stopPropagation();
+    //console.log(subscribed);
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/posts/${p._id}/bookmark`,
@@ -101,14 +119,17 @@ const Post = ({ p }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      await response.json();
+      const data = await response.json();
+      console.log(data);
     } catch (error) {
       console.error("Error:", error);
     }
+    setHasBookmarked(!hasBookmarked);
   };
 
   const handleRetweets = async (e) => {
     e.stopPropagation();
+    //console.log(subscribed);
     try {
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/posts/${p._id}/retweet?email=${email}`,
@@ -119,10 +140,11 @@ const Post = ({ p }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      await response.json();
+      const data = await response.json();
     } catch (error) {
       console.error("Error:", error);
     }
+    setHasRetweeted(!hasRetweeted);
   };
 
   const formattedDate = new Date(p.createdAt).toLocaleDateString();
@@ -262,6 +284,15 @@ const Post = ({ p }) => {
           <Button onClick={(e) => handleUpvote(e)}>
             <Upvotes />
           </Button>
+
+          {/* <div className="post_footerItem">
+            <ThumbUpIcon
+              fontSize="small"
+              style={{ color: hasUpvoted ? "grey" : "blue" }}
+              onClick={(e) => handleUpvote(e)}
+            />
+            <span>{p?.upvotes?.length}</span>
+          </div> */}
         </div>
       </div>
     </div>

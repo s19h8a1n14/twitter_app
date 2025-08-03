@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import { IconButton, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import axios from "axios";
 import API_CONFIG from "../../../config/api";
 
 const style = {
@@ -91,6 +92,7 @@ export default function EditProfile({ user, loggedInUser }) {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("done", data);
       });
   };
 

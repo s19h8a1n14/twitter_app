@@ -4,10 +4,10 @@ import UseLoggedInUser from "../../hooks/UseLoggedInUser";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
-import API_CONFIG from "../../config/api";
+import { API_CONFIG } from "../../config/api";
 
 const Points = ({ onClose }) => {
-  const { points } = useContext(PointContext);
+  const { points, setPoints } = useContext(PointContext);
   const [loggedInUser] = UseLoggedInUser();
   const email = loggedInUser[0]?.email;
   const { t } = useTranslation();
@@ -21,7 +21,8 @@ const Points = ({ onClose }) => {
       );
 
       if (response.status === 200) {
-        // Subscription updated successfully
+        console.log("Subscription updated successfully");
+        // Optionally, you can handle any further logic here after successful update
       } else {
         console.error("Failed to update subscription");
       }
@@ -36,7 +37,8 @@ const Points = ({ onClose }) => {
       );
 
       if (response.status === 200) {
-        // Subscription updated successfully
+        console.log("Subscription updated successfully");
+        // Optionally, you can handle any further logic here after successful update
       } else {
         console.error("Failed to update subscription");
       }

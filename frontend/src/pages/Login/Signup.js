@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TwitterImage from "../../assets/images/twitter.png";
+import TwitterIcon from "@mui/icons-material/Twitter";
 import XIcon from "@mui/icons-material/X";
 import auth from "../../firebase.init";
 import {
@@ -17,10 +18,14 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
   const [name, setName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
-  const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
+  const [createUserWithEmailAndPassword, user, loading, error] =
+    useCreateUserWithEmailAndPassword(auth);
+
+  const [signInWithGoogle, googleUser, googleLoading, googleError] =
+    useSignInWithGoogle(auth);
 
   useEffect(() => {
     if (user || googleUser) {
@@ -42,10 +47,23 @@ const Signup = () => {
           navigate("/");
         });
     }
-  }, [user, googleUser, name, navigate, userName]);
+  }, [user, googleUser]);
+
+  if (user || googleUser) {
+    navigate("/");
+    console.log(user);
+    console.log(googleUser);
+  }
+  if (error) {
+    console.log(error.message);
+  }
+  if (loading) {
+    console.log("loading...");
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(email, password);
     createUserWithEmailAndPassword(email, password);
 
     // let points = 0;

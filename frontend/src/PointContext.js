@@ -20,7 +20,7 @@ const PointProvider = ({ children }) => {
           setPoints(response.data[0].points || 0);
         }
       } catch (error) {
-        // Silently fail - user points will default to 0
+        console.error("Failed to fetch user points:", error);
       }
     };
 

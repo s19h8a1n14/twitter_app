@@ -78,7 +78,7 @@ app.post(
         pLink = session.payment_link;
         let subscriptionNumber = 0;
 
-        if (pLink == "plink_1PY8lfRvkH9eWe19azuwzVGv") {
+        if (pLink == process.env.MONTHLY_PAYMENT_LINK) {
           // monthly subscription
           subscriptionNumber = 1;
           await userCollection.updateOne(
@@ -90,7 +90,7 @@ app.post(
             { email: emailto },
             { $set: { subscriptionExpiry: Date.now() + 2592000000 } }
           );
-        } else if (pLink == "plink_1PY8kXRvkH9eWe19j4uKhKEz") {
+        } else if (pLink == process.env.YEARLY_PAYMENT_LINK) {
           // yearly subsscription
           subscriptionNumber = 2;
           await userCollection.updateOne(
@@ -104,7 +104,7 @@ app.post(
           );
         }
         subscriptionType = subscriptionNumber == 2 ? "Yearly" : "Monthly";
-        amountPaid = subscriptionNumber == 2 ? "Rs 689" : "Rs 189";
+        amountPaid = subscriptionNumber == 2 ? "Rs 799" : "Rs 79";
         let info = await transporter.sendMail({
           from: process.env.USER_EMAIL,
           to: emailto,

@@ -19,7 +19,7 @@ function App({ onClose }) {
         <div className="subscription-plans">
           <div className="plan">
             <h2>{t("Monthly Plan")}</h2>
-            <p className="price">₹189</p>
+            <p className="price">₹79</p>
             <ul className="features">
               <li>{t("Blue tick")}</li>
               <li>{t("Unlimited posts per day")}</li>
@@ -27,7 +27,7 @@ function App({ onClose }) {
             </ul>
             {!subscribed ? (
               <a
-                href="https://buy.stripe.com/test_bIYbLg4bkdwRenCeUW"
+                href="https://buy.stripe.com/test_eVq6oGbrg0SN6orgHjfw400"
                 className="subscribe-button"
               >
                 {t("Subscribe Now")}
@@ -40,7 +40,7 @@ function App({ onClose }) {
           </div>
           <div className="plan">
             <h2>{t("Yearly Plan")}</h2>
-            <p className="price">₹689</p>
+            <p className="price">₹799</p>
             <ul className="features">
               <li>{t("Blue tick")}</li>
               <li>{t("Unlimited posts per day")}</li>
@@ -48,7 +48,7 @@ function App({ onClose }) {
             </ul>
             {!subscribed ? (
               <a
-                href="https://buy.stripe.com/test_28o2aGbDM8cx1AQcMN"
+                href="https://buy.stripe.com/test_aFa28qfHwfNH5kn0Ilfw402"
                 className="subscribe-button"
               >
                 {t("Subscribe Now")}

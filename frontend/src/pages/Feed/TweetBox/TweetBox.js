@@ -7,10 +7,11 @@ import UseLoggedInUser from "../../../hooks/UseLoggedInUser";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../../../firebase.init";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@chakra-ui/react";
 import Snackbar from "@mui/material/Snackbar";
 import { Link } from "react-router-dom";
 import API_CONFIG from "../../../config/api";
-import "./TweetBox.css";
+import "./TweetBox.css"; // Assuming the styles are saved in a TweetBox.css file
 
 const TweetBox = () => {
   const [post, setPost] = useState("");
@@ -25,6 +26,7 @@ const TweetBox = () => {
   const [user] = useAuthState(auth);
   const email = user?.email;
   const { t } = useTranslation();
+  const toast = useToast();
   const [open, setOpen] = useState(false);
   const [desc, setDesc] = useState("");
   const [otp1, setOtp1] = useState("");
@@ -32,6 +34,9 @@ const TweetBox = () => {
   const [otp3, setOtp3] = useState("");
   const [otp4, setOtp4] = useState("");
   const [openModal, setOpenModal] = useState(false);
+
+  // For otp verification
+  const [otp, setOtp] = useState("");
 
   const userProfilePic = loggedInUser[0]?.profileImage
     ? loggedInUser[0]?.profileImage
@@ -111,7 +116,7 @@ const TweetBox = () => {
     formData.set("image", image);
     try {
       const res = await axios.post(
-        "https://api.imgbb.com/1/upload?key=4d85ebb9be2bdb170d589f63edf099ae",
+        `https://api.imgbb.com/1/upload?key=${API_CONFIG.IMGBB_API_KEY}`,
         formData
       );
       setImageURL(res.data.data.display_url);
@@ -133,6 +138,7 @@ const TweetBox = () => {
       alert("No video file selected");
       return;
     }
+    console.log(video.size);
     if (!subscribed && video.size > MAX_VIDEO_SIZE) {
       setDesc("Video size exceeds maximum limit.");
       setOpen(true);
@@ -150,6 +156,7 @@ const TweetBox = () => {
         alert("Video exceeds maximum duration limit.");
         return;
       }
+      const uploadedVideo = video;
       requestOTPAndUploadVideo();
     };
 
@@ -173,12 +180,14 @@ const TweetBox = () => {
   const verifyOTPAndUploadVideo = () => {
     const userEmail = email;
     const otp = otp1 + otp2 + otp3 + otp4;
+    console.log(otp);
     return axios
       .post(`${API_CONFIG.BASE_URL}/verify`, {
         otp,
         email: userEmail,
       })
       .then((res) => {
+        console.log(res.data);
         if (res.data === "Verified") {
           setOpenModal(false);
           setDesc("OTP verified successfully.");
@@ -201,12 +210,13 @@ const TweetBox = () => {
     const video = document.getElementById("video").files[0];
     data.append("file", video);
     data.append("upload_preset", "twitter");
-    data.append("cloud_name", "df9xugdxg");
+    data.append("cloud_name", "dastry4d");
 
     return axios
-      .post("https://api.cloudinary.com/v1_1/df9xugdxg/video/upload", data)
+      .post("https://api.cloudinary.com/v1_1/dastry4d/video/upload", data)
       .then((res) => {
         setVideoURL(res.data.url.toString());
+        console.log(res.data.url.toString());
         setVideoLoading(false);
 
         const videoData = {
@@ -222,7 +232,7 @@ const TweetBox = () => {
         })
           .then((response) => response.json())
           .then((res) => {
-            // Video uploaded successfully
+            console.log("Video uploaded and upvoted:", res);
           })
           .catch((err) => {
             console.error("Error saving video:", err);
@@ -230,6 +240,7 @@ const TweetBox = () => {
           });
       })
       .catch((err) => {
+        console.log(err);
         setVideoLoading(false);
       });
   };
@@ -239,6 +250,7 @@ const TweetBox = () => {
     const userEmail = email;
     sendOTP(userEmail)
       .then((otpResponse) => {
+        console.log(otpResponse.data);
         setOpenModal(true);
       })
       .catch((err) => {

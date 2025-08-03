@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./MainPage.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import Post from "../../Feed/Post/Post";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import axios from "axios";
 import EditProfile from "../EditProfile/EditProfile";
+import { PointContext } from "../../../PointContext";
 import API_CONFIG from "../../../config/api";
 
 const MainPage = ({ user }) => {
@@ -18,7 +19,12 @@ const MainPage = ({ user }) => {
   const [posts, setPosts] = useState([]);
   const [imageURL, setImageURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { points } = useContext(PointContext);
   const [count, setCount] = useState(0);
+
+  const pi = loggedInUser[0]?.profileImage
+    ? loggedInUser[0].profileImage
+    : "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png";
 
   useEffect(() => {
     fetch(`${API_CONFIG.BASE_URL}/userPosts?email=${user?.email}`)
@@ -29,6 +35,7 @@ const MainPage = ({ user }) => {
   }, [posts, user?.email]);
 
   useEffect(() => {
+    console.log(points);
     fetch(
       `${API_CONFIG.BASE_URL}/userPostCount?email=${user.email}`
     )
@@ -51,17 +58,19 @@ const MainPage = ({ user }) => {
   const handleUploadCoverImage = (e) => {
     setIsLoading(true);
     const image = e.target.files[0];
+    console.log(image);
 
     const formData = new FormData();
     formData.set("image", image);
     axios
       .post(
-        "https://api.imgbb.com/1/upload?key=4d85ebb9be2bdb170d589f63edf099ae",
+        `https://api.imgbb.com/1/upload?key=${API_CONFIG.IMGBB_API_KEY}`,
         formData
       )
       .then((res) => {
         const url = res.data.data.display_url;
         setImageURL(res.data.data.display_url);
+        console.log(res.data.data.display_url);
         const useCoverImage = {
           email: user?.email,
           coverImage: url,
@@ -75,23 +84,26 @@ const MainPage = ({ user }) => {
         setIsLoading(false);
       })
       .catch((error) => {
+        console.log(error);
         setIsLoading(false);
       });
   };
   const handleUploadProfileImage = (e) => {
     setIsLoading(true);
     const image = e.target.files[0];
+    console.log(image);
 
     const formData = new FormData();
     formData.set("image", image);
     axios
       .post(
-        "https://api.imgbb.com/1/upload?key=4d85ebb9be2bdb170d589f63edf099ae",
+        `https://api.imgbb.com/1/upload?key=${API_CONFIG.IMGBB_API_KEY}`,
         formData
       )
       .then((res) => {
         const url = res.data.data.display_url;
         setImageURL(res.data.data.display_url);
+        console.log(res.data.data.display_url);
         const useprofileImage = {
           email: user?.email,
           profileImage: url,
@@ -105,6 +117,7 @@ const MainPage = ({ user }) => {
         setIsLoading(false);
       })
       .catch((error) => {
+        console.log(error);
         setIsLoading(false);
       });
   };

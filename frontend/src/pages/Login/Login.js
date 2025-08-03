@@ -8,21 +8,30 @@ import {
 import auth from "../../firebase.init";
 import GoogleButton from "react-google-button";
 import { Link, useNavigate } from "react-router-dom";
+import API_CONFIG from "../../config/api";
 import axios from "axios";
 import Snackbar from "@mui/material/Snackbar";
-import API_CONFIG from "../../config/api";
 import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(auth);
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
 
-  const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
+  const [signInWithGoogle, googleUser, googleLoading, googleError] =
+    useSignInWithGoogle(auth);
+
+  if (user || googleUser) {
+    // navigate("/");
+    console.log(user);
+    console.log(googleUser);
+  }
 
   // useEffect(() => {
   //   // fetch from router /time
@@ -49,12 +58,20 @@ const Login = () => {
     }
   }, [user, googleUser, navigate]);
 
+  if (error) {
+    console.log(error.message);
+  }
+  if (loading) {
+    console.log("loading...");
+  }
+
   const handleClose = () => {
     setOpen(false);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(email, password);
     signInWithEmailAndPassword(email, password);
   };
 

@@ -6,6 +6,7 @@ import Post from "../Feed/Post/Post";
 import "../Page.css";
 import "./Bookmarks.css";
 import { useTranslation } from "react-i18next";
+import API_CONFIG from "../../config/api";
 
 const Bookmarks = () => {
   const [posts, setPosts] = useState([]);
@@ -13,7 +14,7 @@ const Bookmarks = () => {
   const { t } = useTranslation();
   useEffect(() => {
     fetch(
-      `https://twitter-app-4i3a.onrender.com/userBookmarks?email=${user?.email}`
+      `${API_CONFIG.BASE_URL}/userBookmarks?email=${user?.email}`
     )
       .then((res) => res.json())
       .then((data) => {
