@@ -4,7 +4,7 @@ import UseLoggedInUser from "../../hooks/UseLoggedInUser";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
-import { API_CONFIG } from "../../config/api";
+import API_CONFIG from "../../config/api";
 
 const Points = ({ onClose }) => {
   const { points, setPoints } = useContext(PointContext);
