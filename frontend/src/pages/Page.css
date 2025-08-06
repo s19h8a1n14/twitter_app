@@ -1,8 +1,7 @@
 .page {
-  flex: 0.4;
+  flex: 0.6;
   border-right: 1px solid var(--twitter-background);
-  width: 100vw;
-  padding: 0 180px;
+  padding: 20px;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -13,9 +12,8 @@
   font-size: 30px;
 }
 .profilePage {
-  flex: 0.4;
+  flex: 0.6;
   border-right: 1px solid var(--twitter-background);
-  min-width: fit-content;
   overflow-y: scroll;
 }
 .profilePage::-webkit-scrollbar {

@@ -28,9 +28,10 @@ const Signup = () => {
     useSignInWithGoogle(auth);
 
   useEffect(() => {
-    if (user || googleUser) {
-      console.log("User found, registering...");
-      const currentUser = user?.user || googleUser?.user;
+    // Only handle Google sign-in here, not email/password signup
+    if (googleUser) {
+      console.log("Google user found, registering and redirecting...");
+      const currentUser = googleUser?.user;
       
       if (currentUser) {
         const userData = {
@@ -41,19 +42,57 @@ const Signup = () => {
           subscription: false,
         };
         
-        console.log("Sending user data:", userData);
+        console.log("Sending Google user data:", userData);
         
         axios
           .post(`${API_CONFIG.BASE_URL}/register`, userData)
           .then((response) => {
-            console.log("Registration successful:", response.data);
+            console.log("Google registration successful:", response.data);
             navigate("/");
           })
           .catch((error) => {
-            console.error("Registration error:", error);
+            console.error("Google registration error:", error);
             // If user already exists, still navigate to home
             if (error.response?.status === 400) {
               navigate("/");
+            }
+          });
+      }
+    }
+    
+    // Handle email/password signup - don't redirect, just show success
+    if (user) {
+      console.log("Email/password user created, registering...");
+      const currentUser = user?.user;
+      
+      if (currentUser) {
+        const userData = {
+          userName: userName,
+          name: name,
+          email: currentUser.email,
+          points: 0,
+          subscription: false,
+        };
+        
+        console.log("Sending email/password user data:", userData);
+        
+        axios
+          .post(`${API_CONFIG.BASE_URL}/register`, userData)
+          .then((response) => {
+            console.log("Email/password registration successful:", response.data);
+            alert("Account created successfully! Please login with your email and password.");
+            // Clear form fields and redirect to login page
+            setEmail("");
+            setPassword("");
+            setUserName("");
+            setName("");
+            navigate("/login");
+          })
+          .catch((error) => {
+            console.error("Email/password registration error:", error);
+            if (error.response?.status === 400) {
+              alert("User already exists! Please login instead.");
+              navigate("/login");
             }
           });
       }
@@ -127,7 +166,9 @@ const Signup = () => {
           
           {error && (
             <div style={{ color: 'red', marginTop: '10px', textAlign: 'center' }}>
-              Error: {error.message}
+              {error.code === 'auth/email-already-in-use' 
+                ? 'This email is already registered. Please login instead or use a different email.' 
+                : `Error: ${error.message}`}
             </div>
           )}
           

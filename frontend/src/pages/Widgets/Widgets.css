@@ -3,10 +3,9 @@
 }
 
 .widgets {
-  flex: 0.3;
-  min-width: fit-content;
-  overflow-y: scroll;
-  /* width: 100px; */
+  flex: 0.25;
+  margin-top: 20px;
+  padding-left: 20px;
 }
 
 .widgets::-webkit-scrollbar {

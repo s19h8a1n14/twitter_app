@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config(); // Load .env from current directory (backend folder)
 const mongoose = require("mongoose");
 const useragent = require("express-useragent");
 const geoip = require("geoip-lite");
@@ -232,24 +232,34 @@ app.get("/test-email", async (req, res) => {
 
 app.post("/sendotp", (req, res) => {
   let email = req.body.email;
-  console.log(email);
+  console.log("Sending OTP to email:", email);
+  console.log("Email config - USER_EMAIL:", process.env.USER_EMAIL);
+  console.log("Email config - USER_PASSWORD:", process.env.USER_PASSWORD ? "Set" : "Not set");
+  
   let digits = "0123456789";
   let limit = 4;
   let otp = "";
   for (i = 0; i < limit; i++) {
     otp += digits[Math.floor(Math.random() * 10)];
   }
+  
+  console.log("Generated OTP:", otp);
+  
   var options = {
     from: process.env.USER_EMAIL,
     to: `${email}`,
     subject: "Testing node emails",
     html: `<p>Enter the otp: ${otp} to upload video</p>`,
   };
+  
+  console.log("Email options:", options);
+  
   transporter.sendMail(options, function (error, info) {
     if (error) {
       console.error("Error sending email:", error);
       res.status(500).send("Couldn't send OTP. Please try again later.");
     } else {
+      console.log("Email sent successfully:", info);
       savedOTPS[email] = otp;
       setTimeout(() => {
         delete savedOTPS[email]; // Fixed: was deleting savedOTPS.email instead of savedOTPS[email]
@@ -364,7 +374,7 @@ async function run() {
       try {
         const post = req.body;
 
-        //console.log(post);
+        console.log("Received post request:", post);
 
         const user = await userCollection.findOne({ email: post.email });
 
@@ -398,6 +408,9 @@ async function run() {
             ...post,
             createdAt: new Date(),
           });
+          
+          console.log("Post saved successfully:", result.insertedId);
+          
           let points = user.points || 0;
           points += 2;
 
@@ -478,13 +491,13 @@ async function run() {
     });
 
     app.post("/login", async (req, res) => {
-      const { email } = req.body;
+      const { email, userName, name } = req.body;
 
-      console.log(email);
+      console.log("Login attempt for:", email);
 
-      const user = await userCollection.findOne({ email: email });
+      let user = await userCollection.findOne({ email: email });
 
-      console.log(user);
+      console.log("User found:", user);
 
       // Capture user agent information
       const userAgent = req.useragent;
@@ -496,8 +509,6 @@ async function run() {
         ? "Desktop"
         : "Unknown";
 
-      //console.log(device);
-
       // Capture IP address
       const ipAddress =
         req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -505,6 +516,7 @@ async function run() {
       const currentHour = new Date().getHours();
 
       const geo = geoip.lookup(ipAddress);
+      
       if (user) {
         await userCollection.updateOne(
           { email: email },
@@ -522,7 +534,42 @@ async function run() {
         );
         res.status(200).send("Login successful.");
       } else {
-        res.status(404).send("User not found.");
+        // Create user if not found (for Google sign-in)
+        console.log("User not found, creating new user...");
+        const newUser = {
+          email: email,
+          userName: userName || email.split('@')[0],
+          name: name || email.split('@')[0],
+          points: 0,
+          subscription: false,
+          isSubscribed: 0,
+          postCount: 0,
+          subscriptionExpiry: Date.now(),
+          browser: browser,
+          os: os,
+          device: device,
+          ipAddress: ipAddress,
+          geo: geo,
+          bookmarks: [],
+          likes: [],
+          retweets: [],
+          loginHistory: [{
+            date: new Date(),
+            browser: browser,
+            os: os,
+            device: device,
+            ipAddress: ipAddress,
+          }]
+        };
+        
+        try {
+          const result = await userCollection.insertOne(newUser);
+          console.log("New user created:", result.insertedId);
+          res.status(200).send("User created and login successful.");
+        } catch (error) {
+          console.error("Error creating user:", error);
+          res.status(500).send("Error creating user.");
+        }
       }
     });
 

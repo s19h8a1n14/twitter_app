@@ -27,34 +27,61 @@ const Login = () => {
   const [signInWithGoogle, googleUser, googleLoading, googleError] =
     useSignInWithGoogle(auth);
 
-  if (user || googleUser) {
-    // navigate("/");
-    console.log(user);
-    console.log(googleUser);
-  }
-
-  // useEffect(() => {
-  //   // fetch from router /time
-  //   axios.get("https://twitter-app-4i3a.onrender.com/time").then((res) => {
-  //     if (res.data === "Access granted") {
-  //     } else {
-  //       setOpen(true);
-  //       // console.log(res.data);
-  //     }
-  //   });
-  // }, []);
-
   useEffect(() => {
-    if (user || googleUser) {
-      const currentUser = user || googleUser.user;
-      const userData = {
-        email: currentUser.email,
-      };
-      axios
-        .post(`${API_CONFIG.BASE_URL}/login`, userData)
-        .then(() => {
-          navigate("/");
-        });
+    // Handle Google sign-in - direct redirect to home
+    if (googleUser) {
+      console.log("Google user found, logging in and redirecting...");
+      const currentUser = googleUser?.user;
+      
+      if (currentUser) {
+        const userData = {
+          email: currentUser.email,
+          userName: currentUser.displayName?.replace(/\s+/g, '') || currentUser.email.split('@')[0],
+          name: currentUser.displayName || currentUser.email.split('@')[0],
+        };
+        
+        console.log("Sending Google login data:", userData);
+        
+        axios
+          .post(`${API_CONFIG.BASE_URL}/login`, userData)
+          .then((response) => {
+            console.log("Google login successful:", response.data);
+            navigate("/");
+          })
+          .catch((error) => {
+            console.error("Google login error:", error);
+            // Still navigate to home even if login fails
+            navigate("/");
+          });
+      }
+    }
+    
+    // Handle email/password login - redirect to home after successful login
+    if (user) {
+      console.log("Email/password user found, logging in...");
+      const currentUser = user?.user;
+      
+      if (currentUser) {
+        const userData = {
+          email: currentUser.email,
+          userName: currentUser.email.split('@')[0],
+          name: currentUser.email.split('@')[0],
+        };
+        
+        console.log("Sending email/password login data:", userData);
+        
+        axios
+          .post(`${API_CONFIG.BASE_URL}/login`, userData)
+          .then((response) => {
+            console.log("Email/password login successful:", response.data);
+            navigate("/");
+          })
+          .catch((error) => {
+            console.error("Email/password login error:", error);
+            // Still navigate to home even if login fails
+            navigate("/");
+          });
+      }
     }
   }, [user, googleUser, navigate]);
 

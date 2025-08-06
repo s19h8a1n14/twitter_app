@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Login/Signup";
 import ProtectedRoutes from "./pages/ProtectedRoutes";
-
 import "./App.css";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore/Explore";
